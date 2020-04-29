@@ -8,6 +8,8 @@ namespace GAEngine
 {
     public class GAWindow : GameWindow
     {
+        private Texture2D _catTex;
+
         public GAWindow() : base(900, 600, new GraphicsMode(32, 8, 0, 32), "GAEngine")
         {
             VSync = VSyncMode.On;
@@ -22,6 +24,10 @@ namespace GAEngine
 
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Lequal);
+
+            GL.Enable(EnableCap.Texture2D);
+
+            _catTex = ContentPipe.LoadTexture2D("Content/cat.png");
         }
 
         protected override void OnResize(EventArgs e)
@@ -38,20 +44,34 @@ namespace GAEngine
             GL.ClearDepth(1);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            // draw triangle
-            GL.Begin(PrimitiveType.Triangles);
-            GL.Color3(Color.Red);
-            GL.Vertex3(0, 0, 0.5f);
-            GL.Color3(Color.Green);
-            GL.Vertex3(1, 0, 0.5f);
-            GL.Color3(Color.Yellow);
-            GL.Vertex3(0, 1, 0.5f);
+            GL.BindTexture(TextureTarget.Texture2D, _catTex.ID);
 
-            GL.Color4(1f, 1f, 1f, .5f);
-            GL.Vertex3(-.25f, 1, .8f);
-            GL.Vertex3(1, -.25f, .8f);
-            GL.Vertex3(-.25f, -.25f, .8f);
+
+            // draw cat texture
+            GL.Begin(PrimitiveType.Triangles);
+            GL.TexCoord2(0, 0); GL.Vertex2(0, 1);
+            GL.TexCoord2(1, 1); GL.Vertex2(1, 0);
+            GL.TexCoord2(0, 1); GL.Vertex2(0, 0);
+
+            GL.TexCoord2(0, 0); GL.Vertex2(0, 1);
+            GL.TexCoord2(1, 0); GL.Vertex2(1, 1);
+            GL.TexCoord2(1, 1); GL.Vertex2(1, 0);
             GL.End();
+
+            // draw triangle
+            //GL.Begin(PrimitiveType.Triangles);
+            //GL.Color3(Color.Red);
+            //GL.Vertex3(0, 0, 0.5f);
+            //GL.Color3(Color.Green);
+            //GL.Vertex3(1, 0, 0.5f);
+            //GL.Color3(Color.Yellow);
+            //GL.Vertex3(0, 1, 0.5f);
+
+            //GL.Color4(1f, 1f, 1f, .5f);
+            //GL.Vertex3(-.25f, 1, .8f);
+            //GL.Vertex3(1, -.25f, .8f);
+            //GL.Vertex3(-.25f, -.25f, .8f);
+            //GL.End();
 
             SwapBuffers();
         }

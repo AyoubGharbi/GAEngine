@@ -11,4 +11,14 @@
 		<PackageReference Include="OpenTK" Version="3.2.0" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Content\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="Content\cat.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
 </Project>
