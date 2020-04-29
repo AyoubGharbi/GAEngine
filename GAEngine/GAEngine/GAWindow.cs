@@ -46,8 +46,9 @@ namespace GAEngine
 
             GL.BindTexture(TextureTarget.Texture2D, _catTex.ID);
 
-
             // draw cat texture
+            // texture coordinate: left/top : 0 && bottom/right : 1
+            // vertex coordinate : bottom/left : 0 && top/right : 1
             GL.Begin(PrimitiveType.Triangles);
             GL.TexCoord2(0, 0); GL.Vertex2(0, 1);
             GL.TexCoord2(1, 1); GL.Vertex2(1, 0);
