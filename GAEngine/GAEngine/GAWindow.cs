@@ -37,43 +37,26 @@ namespace GAEngine
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            GL.ClearColor(Color.CornflowerBlue);
+            // clear and append a color
+            GL.ClearColor(Color.DarkGray);
             GL.ClearDepth(1);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
+            // projection matrix to define our screen area's coordinates
             Matrix4 projectionMatrix = Matrix4.CreateOrthographicOffCenter(0, Width, Height, 0, 0, 1);
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadMatrix(ref projectionMatrix);
 
-            GL.BindTexture(TextureTarget.Texture2D, _catTex.ID);
+            // model view matrix to define scale, rotation and translation of our "object"
+            Matrix4 modelViewMatrix =
+                Matrix4.CreateScale(0.5f, 0.5f, 1f) *
+                Matrix4.CreateRotationZ(0) *
+                Matrix4.CreateTranslation(0f, 0f, 0f);
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadMatrix(ref modelViewMatrix);
 
-            // draw cat texture
-            // texture coordinate: left/top : 0 && bottom/right : 1
-            // vertex coordinate : bottom/left : 0 && top/right : 1
-            GL.Begin(PrimitiveType.Triangles);
-            GL.TexCoord2(0, 0); GL.Vertex2(0, 0);
-            GL.TexCoord2(1, 1); GL.Vertex2(256, 256);
-            GL.TexCoord2(0, 1); GL.Vertex2(0, 256);
-
-            GL.TexCoord2(0, 0); GL.Vertex2(0, 0);
-            GL.TexCoord2(1, 0); GL.Vertex2(256, 0);
-            GL.TexCoord2(1, 1); GL.Vertex2(256, 256);
-            GL.End();
-
-            // draw triangle
-            //GL.Begin(PrimitiveType.Triangles);
-            //GL.Color3(Color.Red);
-            //GL.Vertex3(0, 0, 0.5f);
-            //GL.Color3(Color.Green);
-            //GL.Vertex3(1, 0, 0.5f);
-            //GL.Color3(Color.Yellow);
-            //GL.Vertex3(0, 1, 0.5f);
-
-            //GL.Color4(1f, 1f, 1f, .5f);
-            //GL.Vertex3(-.25f, 1, .8f);
-            //GL.Vertex3(1, -.25f, .8f);
-            //GL.Vertex3(-.25f, -.25f, .8f);
-            //GL.End();
+            // draw function
+            DrawCat();
 
             SwapBuffers();
         }
@@ -81,5 +64,26 @@ namespace GAEngine
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
         }
+
+        #region Test Methods
+
+        void DrawCat()
+        {
+            GL.BindTexture(TextureTarget.Texture2D, _catTex.ID);
+
+            // draw cat texture
+            GL.Begin(PrimitiveType.Triangles);
+
+            GL.TexCoord2(0, 0); GL.Vertex2(0, 0);
+            GL.TexCoord2(1, 1); GL.Vertex2(256, 256);
+            GL.TexCoord2(0, 1); GL.Vertex2(0, 256);
+
+            GL.TexCoord2(0, 0); GL.Vertex2(0, 0);
+            GL.TexCoord2(1, 0); GL.Vertex2(256, 0);
+            GL.TexCoord2(1, 1); GL.Vertex2(256, 256);
+
+            GL.End();
+        }
+        #endregion
     }
 }
