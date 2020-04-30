@@ -10,7 +10,7 @@ namespace GAEngine
     {
         private Texture2D _catTex;
 
-        public GAWindow() : base(900, 600, new GraphicsMode(32, 8, 0, 32), "GAEngine")
+        public GAWindow() : base(400, 400, new GraphicsMode(32, 8, 0, 32), "GAEngine")
         {
             VSync = VSyncMode.On;
             TargetRenderFrequency = 60;
@@ -33,9 +33,6 @@ namespace GAEngine
         protected override void OnResize(EventArgs e)
         {
             GL.Viewport(0, 0, Width, Height);
-            //GL.MatrixMode(MatrixMode.Projection);
-            //GL.LoadIdentity();
-            //GL.Ortho(0.0, 50.0, 0.0, 50.0, -1.0, 1.0);
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -44,19 +41,23 @@ namespace GAEngine
             GL.ClearDepth(1);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
+            Matrix4 projectionMatrix = Matrix4.CreateOrthographicOffCenter(0, Width, Height, 0, 0, 1);
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadMatrix(ref projectionMatrix);
+
             GL.BindTexture(TextureTarget.Texture2D, _catTex.ID);
 
             // draw cat texture
             // texture coordinate: left/top : 0 && bottom/right : 1
             // vertex coordinate : bottom/left : 0 && top/right : 1
             GL.Begin(PrimitiveType.Triangles);
-            GL.TexCoord2(0, 0); GL.Vertex2(0, 1);
-            GL.TexCoord2(1, 1); GL.Vertex2(1, 0);
-            GL.TexCoord2(0, 1); GL.Vertex2(0, 0);
+            GL.TexCoord2(0, 0); GL.Vertex2(0, 0);
+            GL.TexCoord2(1, 1); GL.Vertex2(256, 256);
+            GL.TexCoord2(0, 1); GL.Vertex2(0, 256);
 
-            GL.TexCoord2(0, 0); GL.Vertex2(0, 1);
-            GL.TexCoord2(1, 0); GL.Vertex2(1, 1);
-            GL.TexCoord2(1, 1); GL.Vertex2(1, 0);
+            GL.TexCoord2(0, 0); GL.Vertex2(0, 0);
+            GL.TexCoord2(1, 0); GL.Vertex2(256, 0);
+            GL.TexCoord2(1, 1); GL.Vertex2(256, 256);
             GL.End();
 
             // draw triangle
