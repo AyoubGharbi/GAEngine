@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Input;
 using System;
 using System.Drawing;
 
@@ -10,7 +11,7 @@ namespace GAEngine
     {
         private Texture2D _catTex;
 
-        public GAWindow() : base(400, 400, new GraphicsMode(32, 8, 0, 32), "GAEngine")
+        public GAWindow() : base(800, 800, new GraphicsMode(32, 8, 0, 32), "GAEngine")
         {
             VSync = VSyncMode.On;
             TargetRenderFrequency = 60;
@@ -26,6 +27,8 @@ namespace GAEngine
             GL.DepthFunc(DepthFunction.Lequal);
 
             GL.Enable(EnableCap.Texture2D);
+            GL.Enable(EnableCap.AlphaTest);
+            GL.AlphaFunc(AlphaFunction.Gequal, 0.7f);
 
             _catTex = ContentPipe.LoadTexture2D("Content/cat.png");
         }
@@ -58,11 +61,44 @@ namespace GAEngine
             // draw function
             DrawCat();
 
+            // model view matrix to define scale, rotation and translation of our "object"
+            modelViewMatrix =
+                Matrix4.CreateScale(1.2f, 1.2f, 1f) *
+                Matrix4.CreateRotationZ(25f) *
+                Matrix4.CreateTranslation(256f, 256f, 0f);
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadMatrix(ref modelViewMatrix);
+
+            // draw function
+            DrawCat();
+
+            // model view matrix to define scale, rotation and translation of our "object"
+            modelViewMatrix =
+                Matrix4.CreateScale(1.2f, 1.2f, 1f) *
+                Matrix4.CreateRotationZ(-25f) *
+                Matrix4.CreateTranslation(200f, 256f, 0f);
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadMatrix(ref modelViewMatrix);
+
+            // draw function
+            DrawCat();
+
             SwapBuffers();
         }
 
+        // input handling with States!
+        private KeyboardState _lastState;
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
+            KeyboardState keyboardState = Keyboard.GetState();
+
+            if (keyboardState.IsKeyDown(Key.Space) &&
+                _lastState.IsKeyUp(Key.Space))
+            {
+                Console.WriteLine("Key down space!");
+            }
+
+            _lastState = keyboardState;
         }
 
         #region Test Methods
