@@ -10,7 +10,7 @@ namespace GAGame
         {
             using (GAWindow gaWindow = new GAWindow())
             {
-                gaWindow.Run();
+                gaWindow.Run(60.0);
             }
         }
     }

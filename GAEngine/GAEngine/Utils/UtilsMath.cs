@@ -1,5 +1,5 @@
 ﻿using OpenTK;
-using OpenTK.Graphics.ES10;
+using OpenTK.Graphics.ES30;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,12 +13,12 @@ namespace GAEngine.Utils
         public static Matrix4 CreateTransformMatrix(Vector3 translation, float rx, float ry, float rz, float scale)
         {
             Matrix4 matrix = new Matrix4();
-            GL.LoadIdentity();
-            matrix = Matrix4.CreateTranslation(translation);
-            matrix = Matrix4.CreateRotationX(rx);
-            matrix = Matrix4.CreateRotationX(ry);
-            matrix = Matrix4.CreateRotationX(rz);
-            matrix = Matrix4.CreateScale(scale);
+            matrix = Matrix4.Identity;
+            matrix = Matrix4.CreateScale(scale) *
+                     Matrix4.CreateRotationX(rx) *
+                     Matrix4.CreateRotationY(ry) *
+                     Matrix4.CreateRotationZ(rz) *
+                     Matrix4.CreateTranslation(translation);
             return matrix;
         }
     }

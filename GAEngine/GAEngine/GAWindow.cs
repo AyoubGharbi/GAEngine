@@ -1,4 +1,5 @@
-﻿using GAEngine.Models;
+﻿using GAEngine.Entities;
+using GAEngine.Models;
 using GAEngine.RenderEngine;
 using GAEngine.Shaders;
 using OpenTK;
@@ -17,6 +18,7 @@ namespace GAEngine
         private StaticShader _staticShader;
         private ModelTexture _modelTexture;
         private TexturedModel _texturedModel;
+        private Entity _entity;
 
         public GAWindow() : base(800, 800, new GraphicsMode(32, 8, 0, 32), "GAEngine")
         {
@@ -53,6 +55,8 @@ namespace GAEngine
             _rawModel = _loader.LoadToVAO(vertices, texCoords, indices);
             _modelTexture = ContentPipe.LoadTexture2D("Textures/cat.png");
             _texturedModel = new TexturedModel(_rawModel, _modelTexture);
+
+            _entity = new Entity(_texturedModel, new Vector3(-1, 0, 0), 0, 0, 0f, 1f);
         }
 
         protected override void OnResize(EventArgs e)
@@ -64,13 +68,20 @@ namespace GAEngine
         {
             _renderer.Prepare();
             _staticShader.Start();
-            _renderer.Render(_texturedModel);
+            _renderer.Render(_entity, _staticShader);
             _staticShader.Stop();
             SwapBuffers();
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
+            if (_entity.Position.X >= 1f)
+            {
+                _entity.Position = new Vector3(-1f, _entity.Position.Y, _entity.Position.Z);
+            }
+            Console.WriteLine("Entity Position X :" + _entity.Position.X);
+            _entity.Move(0.02f, 0, 0);
+            _entity.Rotate(0f, 1f, 0f);
         }
 
         protected override void OnClosed(EventArgs e)
