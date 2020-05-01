@@ -1,4 +1,6 @@
 ﻿using GAEngine;
+using OpenTK;
+using System;
 
 namespace GAGame
 {
@@ -6,8 +8,10 @@ namespace GAGame
     {
         static void Main(string[] args)
         {
-            Window gaWindow = new Window("GAEngine", 1200, 600);
-            gaWindow.Start();
+            using (GAWindow gaWindow = new GAWindow())
+            {
+                gaWindow.Run(60.0);
+            }
         }
     }
 }
