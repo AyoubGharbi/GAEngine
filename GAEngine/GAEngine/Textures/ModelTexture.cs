@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GAEngine
 {
-    class Texture2D
+    class ModelTexture
     {
         private int _id;
         private int _width;
@@ -16,7 +16,7 @@ namespace GAEngine
         public int Width => _width;
         public int Height => _height;
 
-        public Texture2D(int id, int width, int height)
+        public ModelTexture(int id, int width, int height)
         {
             _id = id;
             _width = width;

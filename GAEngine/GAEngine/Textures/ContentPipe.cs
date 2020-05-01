@@ -8,7 +8,7 @@ namespace GAEngine
 {
     class ContentPipe
     {
-        public static Texture2D LoadTexture2D(string filePath)
+        public static ModelTexture LoadTexture2D(string filePath)
         {
             Bitmap bitmap = new Bitmap(filePath);
 
@@ -35,7 +35,7 @@ namespace GAEngine
             GL.TexParameter(TextureTarget.Texture2D,
                 TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);
 
-            return new Texture2D(id, bitmap.Width, bitmap.Height);
+            return new ModelTexture(id, bitmap.Width, bitmap.Height);
         }
     }
 }

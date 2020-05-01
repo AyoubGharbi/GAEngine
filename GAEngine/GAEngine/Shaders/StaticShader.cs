@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace GAEngine.Shaders
+﻿namespace GAEngine.Shaders
 {
     class StaticShader : ShaderProgram
     {
@@ -16,6 +10,7 @@ namespace GAEngine.Shaders
         protected override void BindAttributes()
         {
             base.BindAttribute(0, "position");
+            base.BindAttribute(1, "texCoords");
         }
     }
 }

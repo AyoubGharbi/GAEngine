@@ -1,9 +1,6 @@
 ﻿using OpenTK.Graphics.ES30;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GAEngine.RenderEngine
 {
@@ -11,15 +8,25 @@ namespace GAEngine.RenderEngine
     {
         private readonly List<int> _vaos = new List<int>();
         private readonly List<int> _vbos = new List<int>();
+        private readonly List<int> _textures = new List<int>();
 
-        public RawModel LoadToVAO(float[] positions, int[] indices)
+        public RawModel LoadToVAO(float[] positions, float[] texCoords, int[] indices)
         {
             int vaoID = CreateVAO();
             BindIndicesBuffer(indices);
-            StoreDataToAttributeList(0, positions);
+            StoreDataToAttributeList(0, 3, positions);
+            StoreDataToAttributeList(1, 2, texCoords);
             UnbindVAO();
 
             return new RawModel(vaoID, indices.Length);
+        }
+
+        public int LoadTexture(string filePath)
+        {
+            ModelTexture texture = ContentPipe.LoadTexture2D(filePath);
+            int textureID = texture.ID;
+            _textures.Add(textureID);
+            return textureID;
         }
 
         private int CreateVAO()
@@ -30,13 +37,13 @@ namespace GAEngine.RenderEngine
             return vaoID;
         }
 
-        private void StoreDataToAttributeList(int attributeNumber, float[] data)
+        private void StoreDataToAttributeList(int attributeNumber, int coordinateSize, float[] data)
         {
             GL.GenBuffers(1, out int vboID);
             _vbos.Add(vboID);
             GL.BindBuffer(BufferTarget.ArrayBuffer, vboID);
             GL.BufferData<float>(BufferTarget.ArrayBuffer, (IntPtr)(data.Length * sizeof(float)), data, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(attributeNumber, 3, VertexAttribPointerType.Float, false, 0, 0);
+            GL.VertexAttribPointer(attributeNumber, coordinateSize, VertexAttribPointerType.Float, false, 0, 0);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
@@ -51,7 +58,6 @@ namespace GAEngine.RenderEngine
             _vbos.Add(vboID);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, vboID);
             GL.BufferData<int>(BufferTarget.ElementArrayBuffer, (IntPtr)(indices.Length * sizeof(int)), indices, BufferUsageHint.StaticDraw);
-
         }
 
         public void CleanUp()
@@ -61,6 +67,10 @@ namespace GAEngine.RenderEngine
 
             foreach (var vbo in _vbos)
                 GL.DeleteBuffer(vbo);
+
+
+            foreach (var texture in _textures)
+                GL.DeleteTexture(texture);
         }
 
     }

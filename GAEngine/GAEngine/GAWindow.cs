@@ -1,9 +1,9 @@
-﻿using GAEngine.RenderEngine;
+﻿using GAEngine.Models;
+using GAEngine.RenderEngine;
 using GAEngine.Shaders;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using OpenTK.Input;
 using System;
 using System.Drawing;
 
@@ -15,6 +15,8 @@ namespace GAEngine
         private Renderer _renderer;
         private RawModel _rawModel;
         private StaticShader _staticShader;
+        private ModelTexture _modelTexture;
+        private TexturedModel _texturedModel;
 
         public GAWindow() : base(800, 800, new GraphicsMode(32, 8, 0, 32), "GAEngine")
         {
@@ -41,7 +43,16 @@ namespace GAEngine
                 3, 1, 2
             };
 
-            _rawModel = _loader.LoadToVAO(vertices, indices);
+            float[] texCoords ={
+                0,0,
+                0,1,
+                1,1,
+                1,0
+            };
+
+            _rawModel = _loader.LoadToVAO(vertices, texCoords, indices);
+            _modelTexture = ContentPipe.LoadTexture2D("Textures/cat.png");
+            _texturedModel = new TexturedModel(_rawModel, _modelTexture);
         }
 
         protected override void OnResize(EventArgs e)
@@ -53,7 +64,7 @@ namespace GAEngine
         {
             _renderer.Prepare();
             _staticShader.Start();
-            _renderer.Render(_rawModel);
+            _renderer.Render(_texturedModel);
             _staticShader.Stop();
             SwapBuffers();
         }
@@ -71,7 +82,7 @@ namespace GAEngine
         }
 
         #region Test Methods
-        private Texture2D _catTex;
+        private ModelTexture _catTex;
         void DrawCat()
         {
             GL.BindTexture(TextureTarget.Texture2D, _catTex.ID);

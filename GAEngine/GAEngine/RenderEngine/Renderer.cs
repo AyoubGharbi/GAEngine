@@ -1,10 +1,6 @@
-﻿using OpenTK.Graphics.ES30;
+﻿using GAEngine.Models;
+using OpenTK.Graphics.ES30;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GAEngine.RenderEngine
 {
@@ -16,12 +12,17 @@ namespace GAEngine.RenderEngine
             GL.ClearColor(0f, 0f, 0f, 1f);
         }
 
-        public void Render(RawModel model)
+        public void Render(TexturedModel texturedModel)
         {
-            GL.BindVertexArray(model.VAOID);
+            RawModel rawModel = texturedModel.Raw;
+            GL.BindVertexArray(rawModel.VAOID);
             GL.EnableVertexAttribArray(0);
-            GL.DrawElements(PrimitiveType.Triangles, model.VertexCount, DrawElementsType.UnsignedInt, IntPtr.Zero);
+            GL.EnableVertexAttribArray(1);
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, texturedModel.Texture.ID);
+            GL.DrawElements(PrimitiveType.Triangles, rawModel.VertexCount, DrawElementsType.UnsignedInt, IntPtr.Zero);
             GL.DisableVertexAttribArray(0);
+            GL.DisableVertexAttribArray(1);
             GL.BindVertexArray(0);
         }
     }

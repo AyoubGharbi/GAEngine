@@ -1,6 +1,5 @@
 ﻿using OpenTK.Graphics.ES30;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -20,9 +19,9 @@ namespace GAEngine.Shaders
             _programID = GL.CreateProgram();
             GL.AttachShader(_programID, _vertexShaderID);
             GL.AttachShader(_programID, _fragmentShaderID);
+            BindAttributes();
             GL.LinkProgram(_programID);
             GL.ValidateProgram(_programID);
-            BindAttributes();
         }
 
         public void Start()
