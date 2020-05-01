@@ -72,6 +72,5 @@ namespace GAEngine.RenderEngine
             foreach (var texture in _textures)
                 GL.DeleteTexture(texture);
         }
-
     }
 }

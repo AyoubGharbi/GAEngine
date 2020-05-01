@@ -1,4 +1,5 @@
-﻿using OpenTK.Graphics.ES30;
+﻿using OpenTK;
+using OpenTK.Graphics.ES30;
 using System;
 using System.IO;
 using System.Text;
@@ -22,6 +23,7 @@ namespace GAEngine.Shaders
             BindAttributes();
             GL.LinkProgram(_programID);
             GL.ValidateProgram(_programID);
+            GetAllUniformLocations();
         }
 
         public void Start()
@@ -51,6 +53,33 @@ namespace GAEngine.Shaders
             GL.BindAttribLocation(_programID, attribute, variableName);
         }
 
+        protected void LoadFloat(int location, float value)
+        {
+            GL.Uniform1(location, value);
+        }
+
+        protected void LoadVector(int location, OpenTK.Vector3 value)
+        {
+            GL.Uniform3(location, value);
+        }
+
+        protected void LoadBoolean(int location, bool value)
+        {   
+            GL.Uniform1(location, value ? 1 : 0);
+        }
+
+        protected void LoadMatrix(int location, Matrix4 matrix)
+        {
+            GL.UniformMatrix4(location, false, ref matrix);
+        }
+
+        protected abstract void GetAllUniformLocations();
+
+        protected int GetUniformLocation(string uniformName)
+        {
+            return GL.GetUniformLocation(_programID, uniformName);
+        }
+
         private static int LoadShader(string filePath, ShaderType type)
         {
             StringBuilder shaderSource = new StringBuilder();
@@ -59,11 +88,8 @@ namespace GAEngine.Shaders
             {
                 string[] lines = File.ReadAllLines(filePath);
 
-                Console.WriteLine(lines.Length);
                 foreach (var line in lines)
-                {
                     shaderSource.Append(line).Append("\n");
-                }
             }
             catch (IOException exc)
             {
