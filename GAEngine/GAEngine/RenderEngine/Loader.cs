@@ -12,13 +12,14 @@ namespace GAEngine.RenderEngine
         private readonly List<int> _vaos = new List<int>();
         private readonly List<int> _vbos = new List<int>();
 
-        public RawModel LoadToVAO(float[] positions)
+        public RawModel LoadToVAO(float[] positions, int[] indices)
         {
             int vaoID = CreateVAO();
+            BindIndicesBuffer(indices);
             StoreDataToAttributeList(0, positions);
             UnbindVAO();
 
-            return new RawModel(vaoID, positions.Length / 3);
+            return new RawModel(vaoID, indices.Length);
         }
 
         private int CreateVAO()
@@ -42,6 +43,15 @@ namespace GAEngine.RenderEngine
         private void UnbindVAO()
         {
             GL.BindVertexArray(0);
+        }
+
+        private void BindIndicesBuffer(int[] indices)
+        {
+            GL.GenBuffers(1, out int vboID);
+            _vbos.Add(vboID);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, vboID);
+            GL.BufferData<int>(BufferTarget.ElementArrayBuffer, (IntPtr)(indices.Length * sizeof(int)), indices, BufferUsageHint.StaticDraw);
+
         }
 
         public void CleanUp()

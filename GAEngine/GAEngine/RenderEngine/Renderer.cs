@@ -12,14 +12,16 @@ namespace GAEngine.RenderEngine
     {
         public void Prepare()
         {
-            GL.ClearColor(1f, 1f, 1f, 1f);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.ClearColor(0f, 0f, 0f, 1f);
         }
-        
+
         public void Render(RawModel model)
         {
             GL.BindVertexArray(model.VAOID);
             GL.EnableVertexAttribArray(0);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, model.VertexCount);
+            GL.DrawElements(PrimitiveType.Triangles, model.VertexCount, DrawElementsType.UnsignedInt, IntPtr.Zero);
+            GL.DisableVertexAttribArray(0);
             GL.BindVertexArray(0);
         }
     }

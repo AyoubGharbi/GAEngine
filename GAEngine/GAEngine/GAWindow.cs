@@ -14,7 +14,6 @@ namespace GAEngine
         private Renderer _renderer;
         private RawModel _rawModel;
 
-
         private Texture2D _catTex;
         public GAWindow() : base(800, 800, new GraphicsMode(32, 8, 0, 32), "GAEngine")
         {
@@ -28,16 +27,19 @@ namespace GAEngine
             _loader = new Loader();
             _renderer = new Renderer();
 
-            float[] vertices = {
-                -0.5f,  0.5f, 0f,
-                -0.5f, -0.5f, 0f,
-                 0.5f, -0.5f, 0f,
-                 0.5f, -0.5f, 0f,
-                 0.5f,  0.5f, 0f,
-                -0.5f,  0.5f, 0f
-              };
+            float[] vertices ={
+                -0.5f,  0.5f, 0f,// V0
+                -0.5f, -0.5f, 0f,// V1
+                 0.5f, -0.5f, 0f,// V2
+                 0.5f,  0.5f, 0f,// V3
+            };
 
-            _rawModel = _loader.LoadToVAO(vertices);
+            int[] indices ={
+                0, 1, 3,
+                3, 1, 2
+            };
+
+            _rawModel = _loader.LoadToVAO(vertices, indices);
         }
 
         protected override void OnResize(EventArgs e)
@@ -56,13 +58,11 @@ namespace GAEngine
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-
         }
 
         protected override void OnClosed(EventArgs e)
         {
             _loader.CleanUp();
-
 
             base.OnClosed(e);
         }
