@@ -1,4 +1,5 @@
-﻿using OpenTK;
+﻿using GAEngine.RenderEngine;
+using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
@@ -9,8 +10,12 @@ namespace GAEngine
 {
     public class GAWindow : GameWindow
     {
-        private Texture2D _catTex;
+        private Loader _loader;
+        private Renderer _renderer;
+        private RawModel _rawModel;
 
+
+        private Texture2D _catTex;
         public GAWindow() : base(800, 800, new GraphicsMode(32, 8, 0, 32), "GAEngine")
         {
             VSync = VSyncMode.On;
@@ -20,17 +25,19 @@ namespace GAEngine
 
         protected override void OnLoad(EventArgs e)
         {
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            _loader = new Loader();
+            _renderer = new Renderer();
 
-            GL.Enable(EnableCap.DepthTest);
-            GL.DepthFunc(DepthFunction.Lequal);
+            float[] vertices = {
+                -0.5f,  0.5f, 0f,
+                -0.5f, -0.5f, 0f,
+                 0.5f, -0.5f, 0f,
+                 0.5f, -0.5f, 0f,
+                 0.5f,  0.5f, 0f,
+                -0.5f,  0.5f, 0f
+              };
 
-            GL.Enable(EnableCap.Texture2D);
-            GL.Enable(EnableCap.AlphaTest);
-            GL.AlphaFunc(AlphaFunction.Gequal, 0.7f);
-
-            _catTex = ContentPipe.LoadTexture2D("Content/cat.png");
+            _rawModel = _loader.LoadToVAO(vertices);
         }
 
         protected override void OnResize(EventArgs e)
@@ -39,6 +46,48 @@ namespace GAEngine
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
+        {
+            _renderer.Prepare();
+
+            _renderer.Render(_rawModel);
+
+            SwapBuffers();
+        }
+
+        protected override void OnUpdateFrame(FrameEventArgs e)
+        {
+
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            _loader.CleanUp();
+
+
+            base.OnClosed(e);
+        }
+
+        #region Test Methods
+
+        void DrawCat()
+        {
+            GL.BindTexture(TextureTarget.Texture2D, _catTex.ID);
+
+            // draw cat texture
+            GL.Begin(PrimitiveType.Triangles);
+
+            GL.TexCoord2(0, 0); GL.Vertex2(0, 0);
+            GL.TexCoord2(1, 1); GL.Vertex2(256, 256);
+            GL.TexCoord2(0, 1); GL.Vertex2(0, 256);
+
+            GL.TexCoord2(0, 0); GL.Vertex2(0, 0);
+            GL.TexCoord2(1, 0); GL.Vertex2(256, 0);
+            GL.TexCoord2(1, 1); GL.Vertex2(256, 256);
+
+            GL.End();
+        }
+
+        void ManipulateMatrices()
         {
             // clear and append a color
             GL.ClearColor(Color.DarkGray);
@@ -83,42 +132,21 @@ namespace GAEngine
             // draw function
             DrawCat();
 
-            SwapBuffers();
         }
 
-        // input handling with States!
-        private KeyboardState _lastState;
-        protected override void OnUpdateFrame(FrameEventArgs e)
+        void LoadStuff()
         {
-            KeyboardState keyboardState = Keyboard.GetState();
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            if (keyboardState.IsKeyDown(Key.Space) &&
-                _lastState.IsKeyUp(Key.Space))
-            {
-                Console.WriteLine("Key down space!");
-            }
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Lequal);
 
-            _lastState = keyboardState;
-        }
+            GL.Enable(EnableCap.Texture2D);
+            GL.Enable(EnableCap.AlphaTest);
+            GL.AlphaFunc(AlphaFunction.Gequal, 0.7f);
 
-        #region Test Methods
-
-        void DrawCat()
-        {
-            GL.BindTexture(TextureTarget.Texture2D, _catTex.ID);
-
-            // draw cat texture
-            GL.Begin(PrimitiveType.Triangles);
-
-            GL.TexCoord2(0, 0); GL.Vertex2(0, 0);
-            GL.TexCoord2(1, 1); GL.Vertex2(256, 256);
-            GL.TexCoord2(0, 1); GL.Vertex2(0, 256);
-
-            GL.TexCoord2(0, 0); GL.Vertex2(0, 0);
-            GL.TexCoord2(1, 0); GL.Vertex2(256, 0);
-            GL.TexCoord2(1, 1); GL.Vertex2(256, 256);
-
-            GL.End();
+            _catTex = ContentPipe.LoadTexture2D("Content/cat.png");
         }
         #endregion
     }
