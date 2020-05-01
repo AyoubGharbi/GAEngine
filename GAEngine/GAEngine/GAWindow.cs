@@ -1,4 +1,5 @@
 ﻿using GAEngine.RenderEngine;
+using GAEngine.Shaders;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -13,8 +14,8 @@ namespace GAEngine
         private Loader _loader;
         private Renderer _renderer;
         private RawModel _rawModel;
+        private StaticShader _staticShader;
 
-        private Texture2D _catTex;
         public GAWindow() : base(800, 800, new GraphicsMode(32, 8, 0, 32), "GAEngine")
         {
             VSync = VSyncMode.On;
@@ -26,6 +27,7 @@ namespace GAEngine
         {
             _loader = new Loader();
             _renderer = new Renderer();
+            _staticShader = new StaticShader();
 
             float[] vertices ={
                 -0.5f,  0.5f, 0f,// V0
@@ -50,9 +52,9 @@ namespace GAEngine
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             _renderer.Prepare();
-
+            _staticShader.Start();
             _renderer.Render(_rawModel);
-
+            _staticShader.Stop();
             SwapBuffers();
         }
 
@@ -63,12 +65,13 @@ namespace GAEngine
         protected override void OnClosed(EventArgs e)
         {
             _loader.CleanUp();
+            _staticShader.CleanUp();
 
             base.OnClosed(e);
         }
 
         #region Test Methods
-
+        private Texture2D _catTex;
         void DrawCat()
         {
             GL.BindTexture(TextureTarget.Texture2D, _catTex.ID);
