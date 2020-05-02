@@ -29,18 +29,27 @@ namespace GAEngine.Entities
         {
             KeyboardState state = Keyboard.GetState();
 
-            if (state.IsKeyDown(Key.W))
+            if (state.IsKeyDown(Key.Down))
             {
+                Console.WriteLine("Move (-Z)");
                 _position.Z -= 0.02f;
             }
-            
+
+            if (state.IsKeyDown(Key.Up))
+            {
+                Console.WriteLine("Move (Z)");
+                _position.Z += 0.02f;
+            }
+
             if (state.IsKeyDown(Key.D))
             {
+                Console.WriteLine("Move (X)");
                 _position.X -= 0.02f;
             }
-            
+
             if (state.IsKeyDown(Key.A))
             {
+                Console.WriteLine("Move (-X)");
                 _position.X += 0.02f;
             }
         }

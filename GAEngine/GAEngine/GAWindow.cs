@@ -34,23 +34,82 @@ namespace GAEngine
             _staticShader = new StaticShader();
             _camera = new Camera();
 
-            float[] vertices ={
-                -0.5f,  0.5f, 0f,// V0
-                -0.5f, -0.5f, 0f,// V1
-                 0.5f, -0.5f, 0f,// V2
-                 0.5f,  0.5f, 0f,// V3
+            float[] vertices = {
+                -0.5f,0.5f,-0.5f,
+                -0.5f,-0.5f,-0.5f,
+                0.5f,-0.5f,-0.5f,
+                0.5f,0.5f,-0.5f,
+
+                -0.5f,0.5f,0.5f,
+                -0.5f,-0.5f,0.5f,
+                0.5f,-0.5f,0.5f,
+                0.5f,0.5f,0.5f,
+
+                0.5f,0.5f,-0.5f,
+                0.5f,-0.5f,-0.5f,
+                0.5f,-0.5f,0.5f,
+                0.5f,0.5f,0.5f,
+
+                -0.5f,0.5f,-0.5f,
+                -0.5f,-0.5f,-0.5f,
+                -0.5f,-0.5f,0.5f,
+                -0.5f,0.5f,0.5f,
+
+                -0.5f,0.5f,0.5f,
+                -0.5f,0.5f,-0.5f,
+                0.5f,0.5f,-0.5f,
+                0.5f,0.5f,0.5f,
+
+                -0.5f,-0.5f,0.5f,
+                -0.5f,-0.5f,-0.5f,
+                0.5f,-0.5f,-0.5f,
+                0.5f,-0.5f,0.5f
+
             };
 
-            int[] indices ={
-                0, 1, 3,
-                3, 1, 2
+            int[] indices = {
+                0,1,3,
+                3,1,2,
+                4,5,7,
+                7,5,6,
+                8,9,11,
+                11,9,10,
+                12,13,15,
+                15,13,14,
+                16,17,19,
+                19,17,18,
+                20,21,23,
+                23,21,22
+
             };
 
-            float[] texCoords ={
+            float[] texCoords = {
+                0,0,
+                0,1,
+                1,1,
+                1,0,
+                0,0,
+                0,1,
+                1,1,
+                1,0,
+                0,0,
+                0,1,
+                1,1,
+                1,0,
+                0,0,
+                0,1,
+                1,1,
+                1,0,
+                0,0,
+                0,1,
+                1,1,
+                1,0,
                 0,0,
                 0,1,
                 1,1,
                 1,0
+
+
             };
 
             _rawModel = _loader.LoadToVAO(vertices, texCoords, indices);
@@ -69,7 +128,7 @@ namespace GAEngine
         {
             _renderer.Prepare();
             _staticShader.Start();
-            _renderer.Render(this, _entity, _staticShader,_camera);
+            _renderer.Render(this, _entity, _staticShader, _camera);
             _staticShader.Stop();
             SwapBuffers();
         }
@@ -78,7 +137,7 @@ namespace GAEngine
         {
             _camera.Move();
             //_entity.Move(0f, 0, -.2f);
-            //_entity.Rotate(0f, .1f, 0f);
+            _entity.Rotate(0.02f, .02f, 0f);
         }
 
         protected override void OnClosed(EventArgs e)
