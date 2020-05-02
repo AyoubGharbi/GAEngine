@@ -17,11 +17,10 @@ namespace GAEngine.RenderEngine
         public void Prepare()
         {
             GL.Clear(ClearBufferMask.ColorBufferBit);
-            //GL.ClearColor(Color.CornflowerBlue);
             GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         }
 
-        public void Render(GAWindow window, Entity entity, StaticShader shader)
+        public void Render(GAWindow window, Entity entity, StaticShader shader, Camera camera)
         {
             TexturedModel texturedModel = entity.Model;
             RawModel rawModel = texturedModel.Raw;
@@ -29,10 +28,15 @@ namespace GAEngine.RenderEngine
             GL.EnableVertexAttribArray(0);
             GL.EnableVertexAttribArray(1);
 
+            Matrix4 viewMatrix = UtilsMath.CreateViewMatrix(camera);
+            shader.LoadViewMatrix(viewMatrix);
+
             Matrix4 projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(_fov),
                                                                            (float)window.Width / (float)window.Height, 0.1f, 1000.0f);
 
             shader.LoadProjectionMatrix(projectionMatrix);
+
+
 
             Matrix4 transformMatrix = UtilsMath.CreateTransformMatrix(entity.Position,
                                                                       entity.RotationX,

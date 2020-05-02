@@ -1,10 +1,6 @@
-﻿using OpenTK;
-using OpenTK.Graphics.ES30;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using GAEngine.Entities;
+using OpenTK;
+
 
 namespace GAEngine.Utils
 {
@@ -20,6 +16,21 @@ namespace GAEngine.Utils
                      Matrix4.CreateRotationZ(rz) *
                      Matrix4.CreateTranslation(translation);
             return matrix;
+        }
+
+        public static Matrix4 CreateViewMatrix(Camera camera)
+        {
+            Matrix4 viewMatrix = new Matrix4();
+
+            Vector3 cameraPos = camera.Position;
+            Vector3 negativeCameraPos = new Vector3(-cameraPos.X, -cameraPos.Y, -cameraPos.Z);
+
+            viewMatrix = Matrix4.Identity;
+            viewMatrix = Matrix4.CreateRotationX((float)MathHelper.DegreesToRadians(camera.Pitch)) *
+                         Matrix4.CreateRotationY((float)MathHelper.DegreesToRadians(camera.Yaw)) *
+                         Matrix4.CreateTranslation(negativeCameraPos);
+
+            return viewMatrix;
         }
     }
 }
