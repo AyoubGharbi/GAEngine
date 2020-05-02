@@ -6,9 +6,10 @@ in vec2 texCoords;
 out vec2 texCoordsPass;
 
 uniform mat4 transformMatrix;
+uniform mat4 projectionMatrix;
 
 void main(void)
 {
-	gl_Position = transformMatrix * vec4(position, 1.0);
+	gl_Position = projectionMatrix * transformMatrix * vec4(position, 1.0);
 	texCoordsPass = texCoords;
 }

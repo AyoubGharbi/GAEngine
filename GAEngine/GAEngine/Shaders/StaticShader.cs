@@ -8,6 +8,7 @@ namespace GAEngine.Shaders
         private const string FRAGMENT_FILE = "Shaders/FragmentShader.txt";
 
         private int _locationTransformMatrix;
+        private int _locationProjectionMatrix;
 
         public StaticShader() : base(VERTEX_FILE, FRAGMENT_FILE) { }
 
@@ -20,11 +21,17 @@ namespace GAEngine.Shaders
         protected override void GetAllUniformLocations()
         {
             _locationTransformMatrix = base.GetUniformLocation("transformMatrix");
+            _locationProjectionMatrix = base.GetUniformLocation("projectionMatrix");
         }
 
         public void LoadTransformMatrix(Matrix4 matrix)
         {
             base.LoadMatrix(_locationTransformMatrix, matrix);
+        }
+
+        public void LoadProjectionMatrix(Matrix4 matrix)
+        {
+            base.LoadMatrix(_locationProjectionMatrix, matrix);
         }
     }
 }
