@@ -17,7 +17,8 @@ namespace GAEngine.RenderEngine
         public void Prepare()
         {
             GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.ClearColor(Color.CornflowerBlue);
+            //GL.ClearColor(Color.CornflowerBlue);
+            GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         }
 
         public void Render(GAWindow window, Entity entity, StaticShader shader)

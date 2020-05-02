@@ -5,9 +5,7 @@ using GAEngine.Shaders;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using OpenTK.Input;
 using System;
-using System.Drawing;
 
 namespace GAEngine
 {
@@ -74,25 +72,10 @@ namespace GAEngine
             SwapBuffers();
         }
 
-        protected override void OnKeyDown(KeyboardKeyEventArgs e)
-        {
-            base.OnKeyDown(e);
-            if (e.Key == Key.Up)
-            {
-                _renderer.FOV += 5;
-            }
-            else if (e.Key == Key.Down)
-            {
-                _renderer.FOV -= 5;
-            }
-
-            Console.WriteLine("Field of view has been changed to :" + _renderer.FOV);
-        }
-
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            //_entity.Move(0f, 0, -.01f);
-            _entity.Rotate(0f, .1f, 0f);
+            _entity.Move(0f, 0, -.2f);
+            //_entity.Rotate(0f, .1f, 0f);
         }
 
         protected override void OnClosed(EventArgs e)
