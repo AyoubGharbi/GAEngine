@@ -68,7 +68,6 @@ namespace GAEngine.RenderEngine
             foreach (var vbo in _vbos)
                 GL.DeleteBuffer(vbo);
 
-
             foreach (var texture in _textures)
                 GL.DeleteTexture(texture);
         }

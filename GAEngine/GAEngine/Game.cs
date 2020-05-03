@@ -1,13 +1,17 @@
 ﻿namespace GAEngine
 {
-    class Game
+    public class Game
     {
-        static void Main(string[] args)
+        private GAWindow _gaWindow;
+
+        public Game()
         {
-            using (GAWindow gaWindow = new GAWindow())
-            {
-                gaWindow.Run(60.0);
-            }
+            _gaWindow = new GAWindow();
+        }
+
+        public void StartGame()
+        {
+            _gaWindow.Run(60.0);
         }
     }
 }
