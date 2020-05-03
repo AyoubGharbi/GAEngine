@@ -1,10 +1,6 @@
-﻿using GAEngine;
-using OpenTK;
-using System;
-
-namespace GAGame
+﻿namespace GAEngine
 {
-    class EntryPoint
+    class Game
     {
         static void Main(string[] args)
         {
