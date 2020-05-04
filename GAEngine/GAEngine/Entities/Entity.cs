@@ -30,7 +30,7 @@ namespace GAEngine.Entities
         public float RotationX { get => _rotationX; set => _rotationX = value; }
         public float RotationY { get => _rotationY; set => _rotationY = value; }
         public float RotationZ { get => _rotationZ; set => _rotationZ = value; }
-        public float Scale { get => _scale; set => _scale = value; }
+        public float Scaling { get => _scale; set => _scale = value; }
 
         public void Move(float x, float y, float z)
         {
@@ -44,6 +44,11 @@ namespace GAEngine.Entities
             _rotationX += x;
             _rotationY += y;
             _rotationZ += z;
+        }
+
+        public void Scale(float scale)
+        {
+            _scale = scale;
         }
     }
 }

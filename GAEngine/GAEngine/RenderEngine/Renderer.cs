@@ -43,7 +43,7 @@ namespace GAEngine.RenderEngine
                                                                       entity.RotationX,
                                                                       entity.RotationY,
                                                                       entity.RotationZ,
-                                                                      entity.Scale);
+                                                                      entity.Scaling);
             shader.LoadTransformMatrix(transformMatrix);
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, texturedModel.Texture.ID);

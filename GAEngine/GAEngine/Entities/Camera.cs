@@ -53,5 +53,12 @@ namespace GAEngine.Entities
                 _position.X += 0.02f;
             }
         }
+
+        public void Move(float x, float y, float z)
+        {
+            _position.X = x;
+            _position.Y = y;
+            _position.Z = z;
+        }
     }
 }

@@ -6,6 +6,8 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System;
+using GAEngine.IMGUI;
+using ImGuiNET;
 
 namespace GAEngine
 {
@@ -20,6 +22,8 @@ namespace GAEngine
         private Entity _entity;
         private Camera _camera;
 
+        private ImGuiController _imGuiController;
+
         public GAWindow() : base(800, 800, new GraphicsMode(32, 8, 0, 32), "GAEngine")
         {
             VSync = VSyncMode.On;
@@ -33,6 +37,8 @@ namespace GAEngine
             _renderer = new Renderer();
             _staticShader = new StaticShader();
             _camera = new Camera();
+
+            _imGuiController = new ImGuiController(Width, Height);
 
             float[] vertices = {
                 -0.5f,0.5f,-0.5f,
@@ -122,6 +128,8 @@ namespace GAEngine
         protected override void OnResize(EventArgs e)
         {
             GL.Viewport(0, 0, Width, Height);
+
+            _imGuiController.WindowResized(Width, Height);
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -129,15 +137,37 @@ namespace GAEngine
             _renderer.Prepare();
             _staticShader.Start();
             _renderer.Render(this, _entity, _staticShader, _camera);
+            _imGuiController.Render();
             _staticShader.Stop();
             SwapBuffers();
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            _camera.Move();
-            //_entity.Move(0f, 0, -.2f);
+            #region IMGUI
+            _imGuiController.Update(this, (float)e.Time);
+
+            ImGui.Begin("Entities");
+
+            // cube
+            ImGui.BeginChild("Cube");
+            var scale = _entity.Scaling;
+            ImGui.SliderFloat("Scale", ref scale, 0.1f, 5.0f);
+            
+            // camera
+            ImGui.BeginChild("Camera");
+            var x = _camera.Position.X;
+            ImGui.SliderFloat("X", ref x, 1,-1);
+            var y = _camera.Position.Y;
+            ImGui.SliderFloat("Y", ref y, 1, -1);
+            var z = _camera.Position.Z;
+            ImGui.SliderFloat("Z", ref z, -1, 1);
+
+            ImGui.End();
+            #endregion
+            _camera.Move(x, y, z);
             _entity.Rotate(0.02f, .02f, 0f);
+            _entity.Scale(scale);
         }
 
         protected override void OnClosed(EventArgs e)
