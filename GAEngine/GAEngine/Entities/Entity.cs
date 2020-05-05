@@ -10,13 +10,17 @@ namespace GAEngine.Entities
 {
     class Entity
     {
+        private string _entityName;
         private TexturedModel _texturedModel;
         private Vector3 _position;
         private float _rotationX, _rotationY, _rotationZ;
         private float _scale;
 
-        public Entity(TexturedModel model, Vector3 position, float rx, float ry, float rz, float scale)
+        public string EntityName => _entityName;
+
+        public Entity(string name, TexturedModel model, Vector3 position, float rx, float ry, float rz, float scale)
         {
+            _entityName = name;
             _texturedModel = model;
             _position = position;
             _rotationX = rx;
@@ -30,7 +34,7 @@ namespace GAEngine.Entities
         public float RotationX { get => _rotationX; set => _rotationX = value; }
         public float RotationY { get => _rotationY; set => _rotationY = value; }
         public float RotationZ { get => _rotationZ; set => _rotationZ = value; }
-        public float Scale { get => _scale; set => _scale = value; }
+        public float Scaling { get => _scale; set => _scale = value; }
 
         public void Move(float x, float y, float z)
         {
@@ -44,6 +48,11 @@ namespace GAEngine.Entities
             _rotationX += x;
             _rotationY += y;
             _rotationZ += z;
+        }
+
+        public void Scale(float scale)
+        {
+            _scale = scale;
         }
     }
 }

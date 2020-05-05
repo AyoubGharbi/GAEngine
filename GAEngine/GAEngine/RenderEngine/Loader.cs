@@ -10,12 +10,13 @@ namespace GAEngine.RenderEngine
         private readonly List<int> _vbos = new List<int>();
         private readonly List<int> _textures = new List<int>();
 
-        public RawModel LoadToVAO(float[] positions, float[] texCoords, int[] indices)
+        public RawModel LoadToVAO(float[] positions, float[] texCoords, float[] normals, int[] indices)
         {
             int vaoID = CreateVAO();
             BindIndicesBuffer(indices);
             StoreDataToAttributeList(0, 3, positions);
             StoreDataToAttributeList(1, 2, texCoords);
+            StoreDataToAttributeList(2, 3, normals);
             UnbindVAO();
 
             return new RawModel(vaoID, indices.Length);
@@ -67,7 +68,6 @@ namespace GAEngine.RenderEngine
 
             foreach (var vbo in _vbos)
                 GL.DeleteBuffer(vbo);
-
 
             foreach (var texture in _textures)
                 GL.DeleteTexture(texture);

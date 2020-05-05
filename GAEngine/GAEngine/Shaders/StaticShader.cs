@@ -1,4 +1,5 @@
-﻿using OpenTK;
+﻿using GAEngine.Lights;
+using OpenTK;
 
 namespace GAEngine.Shaders
 {
@@ -7,7 +8,11 @@ namespace GAEngine.Shaders
         private const string VERTEX_FILE = "Shaders/VertexShader.txt";
         private const string FRAGMENT_FILE = "Shaders/FragmentShader.txt";
 
+        private int _locationViewMatrix;
         private int _locationTransformMatrix;
+        private int _locationProjectionMatrix;
+        private int _locationLightColor;
+        private int _locationLightPosition;
 
         public StaticShader() : base(VERTEX_FILE, FRAGMENT_FILE) { }
 
@@ -15,16 +20,37 @@ namespace GAEngine.Shaders
         {
             base.BindAttribute(0, "position");
             base.BindAttribute(1, "texCoords");
+            base.BindAttribute(2, "normal");
         }
 
         protected override void GetAllUniformLocations()
         {
             _locationTransformMatrix = base.GetUniformLocation("transformMatrix");
+            _locationProjectionMatrix = base.GetUniformLocation("projectionMatrix");
+            _locationViewMatrix = base.GetUniformLocation("viewMatrix");
+            _locationLightColor = base.GetUniformLocation("lightColor");
+            _locationLightPosition = base.GetUniformLocation("lightPos");
         }
 
         public void LoadTransformMatrix(Matrix4 matrix)
         {
             base.LoadMatrix(_locationTransformMatrix, matrix);
+        }
+
+        public void LoadProjectionMatrix(Matrix4 matrix)
+        {
+            base.LoadMatrix(_locationProjectionMatrix, matrix);
+        }
+
+        public void LoadViewMatrix(Matrix4 matrix)
+        {
+            base.LoadMatrix(_locationViewMatrix, matrix);
+        }
+
+        public void LoadLight(Light light)
+        {
+            base.LoadVector(_locationLightColor, light.Color);
+            base.LoadVector(_locationLightPosition, light.Position);
         }
     }
 }
