@@ -1,4 +1,5 @@
-﻿using OpenTK;
+﻿using GAEngine.Lights;
+using OpenTK;
 
 namespace GAEngine.Shaders
 {
@@ -10,6 +11,8 @@ namespace GAEngine.Shaders
         private int _locationViewMatrix;
         private int _locationTransformMatrix;
         private int _locationProjectionMatrix;
+        private int _locationLightColor;
+        private int _locationLightPosition;
 
         public StaticShader() : base(VERTEX_FILE, FRAGMENT_FILE) { }
 
@@ -17,6 +20,7 @@ namespace GAEngine.Shaders
         {
             base.BindAttribute(0, "position");
             base.BindAttribute(1, "texCoords");
+            base.BindAttribute(2, "normal");
         }
 
         protected override void GetAllUniformLocations()
@@ -24,6 +28,8 @@ namespace GAEngine.Shaders
             _locationTransformMatrix = base.GetUniformLocation("transformMatrix");
             _locationProjectionMatrix = base.GetUniformLocation("projectionMatrix");
             _locationViewMatrix = base.GetUniformLocation("viewMatrix");
+            _locationLightColor = base.GetUniformLocation("lightColor");
+            _locationLightPosition = base.GetUniformLocation("lightPos");
         }
 
         public void LoadTransformMatrix(Matrix4 matrix)
@@ -39,6 +45,12 @@ namespace GAEngine.Shaders
         public void LoadViewMatrix(Matrix4 matrix)
         {
             base.LoadMatrix(_locationViewMatrix, matrix);
+        }
+
+        public void LoadLight(Light light)
+        {
+            base.LoadVector(_locationLightColor, light.Color);
+            base.LoadVector(_locationLightPosition, light.Position);
         }
     }
 }

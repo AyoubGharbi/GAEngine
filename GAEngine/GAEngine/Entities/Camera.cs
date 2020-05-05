@@ -9,12 +9,15 @@ using System.Threading.Tasks;
 
 namespace GAEngine.Entities
 {
-    class Camera
+    public class Camera
     {
+        private float _fov = 60.0f;
+        public float FOV { get => _fov; set => _fov = value; }
+
         private float _yaw;
         private float _roll;
         private float _pitch;
-        private Vector3 _position = Vector3.Zero;
+        private Vector3 _position = new Vector3(0f,0f,0f);
 
         public float Yaw => _yaw;
         public float Roll => _roll;

@@ -11,7 +11,7 @@
 
         public void StartGame()
         {
-            _gaWindow.Run(60.0);
+            _gaWindow.Run();
         }
     }
 }
