@@ -1,11 +1,6 @@
 ﻿using OpenTK;
 using OpenTK.Input;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GAEngine.Entities
 {
@@ -15,14 +10,17 @@ namespace GAEngine.Entities
         public float FOV { get => _fov; set => _fov = value; }
 
         private float _yaw;
-        private float _roll;
-        private float _pitch;
-        private Vector3 _position = new Vector3(0f,0f,0f);
+        public float Yaw { get => _yaw; set => _yaw = value; }
 
-        public float Yaw => _yaw;
-        public float Roll => _roll;
-        public float Pitch => _pitch;
+        private float _roll;
+        public float Roll { get => _roll; set => _roll = value; }
+
+        private float _pitch;
+        public float Pitch { get => _pitch; set => _pitch = value; }
+
         public Vector3 Position => _position;
+
+        private Vector3 _position = new Vector3(0f, 0f, 0f);
 
         public Camera()
         {

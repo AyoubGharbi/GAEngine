@@ -8,7 +8,7 @@ using OpenTK.Graphics.OpenGL;
 using System;
 using GAEngine.IMGUI;
 using ImGuiNET;
-using GAEngine.Assimp;
+using GAEngine.AssimpData;
 using System.Collections.Generic;
 using GAEngine.Utils;
 
@@ -41,7 +41,11 @@ namespace GAEngine
             _renderer = new Renderer();
             _staticShader = new StaticShader();
             _camera = new GAEngine.Entities.Camera();
-            _light = new Lights.Light(new Vector3(1, 1, 1), new Vector3(0, 15f, -30f));
+            _light = new Lights.Light(new Vector3(1, 1, 1), new Vector3(0, 0f, -15f));
+
+            //testing purpose
+            //_camera.Move(-4.3f, 4.3f, 21f);
+            //_light.Position = new Vector3(0f, 15f, 3.5f);
 
             _imGuiController = new ImGuiController(Width, Height);
 
@@ -54,10 +58,10 @@ namespace GAEngine
                                             indices: mesh.GetIndices());
 
 
-            _specialTexture = ContentPipe.LoadTexture2D("Res/head.bmp");
+            _specialTexture = ContentPipe.LoadTexture2D("Res/terrainTex.png");
             _specialTextured = new TexturedModel(_specialRaw, _specialTexture);
 
-            _entities.Add(new Entity("Head 04", _specialTextured, new Vector3(0, 0, -35f), 0, 0, 0f, 1f));
+            _entities.Add(new Entity("Terrain", _specialTextured, new Vector3(0, 0, -10f), 0, 0, 0f, 1f));
         }
 
         protected override void OnResize(EventArgs e)
@@ -103,14 +107,18 @@ namespace GAEngine
 
                         if (ImGui.BeginTabItem(entity.EntityName))
                         {
-                            var rotation = _entities[i].RotationY;
-                            ImGui.SliderFloat("Rotation Y", ref rotation, -5, 5f);
+                            var rotationX = _entities[i].RotationX;
+                            ImGui.SliderFloat("Rotation X", ref rotationX, -5, 5f);
+
+                            var rotationY = _entities[i].RotationY;
+                            ImGui.SliderFloat("Rotation Y", ref rotationY, -5, 5f);
 
                             var scale = _entities[i].Scaling;
                             ImGui.SliderFloat("Scale", ref scale, 0.1f, 5.0f);
 
                             _entities[i].Scale(scale);
-                            _entities[i].RotationY = rotation;
+                            _entities[i].RotationX = rotationX;
+                            _entities[i].RotationY = rotationY;
 
                             ImGui.EndTabItem();
                         }
@@ -121,15 +129,19 @@ namespace GAEngine
                     {
                         var fov = _camera.FOV;
                         ImGui.SliderFloat("FOV", ref fov, 0.1f, 100f);
-                        var x = _camera.Position.X;
-                        ImGui.SliderFloat("X", ref x, -5, 5);
-                        var y = _camera.Position.Y;
-                        ImGui.SliderFloat("Y", ref y, -5, 5);
-                        var z = _camera.Position.Z;
-                        ImGui.SliderFloat("Z", ref z, -50, 50);
-
                         _camera.FOV = fov;
-                        _camera.Move(x, y, z);
+
+                        var position = _camera.Position.Vector3ToV3();
+                        ImGui.SliderFloat3("Position", ref position, -50, 50);
+                        _camera.Move(position.X, position.Y, position.Z);
+
+                        var rotationX = _camera.Yaw;
+                        var rotationY = _camera.Pitch;
+                        ImGui.SliderFloat("Rotation X", ref rotationX, -50f,50f);
+                        ImGui.SliderFloat("Rotation Y", ref rotationY, -50, 50f);
+
+                        _camera.Yaw = rotationX;
+                        _camera.Pitch = rotationY;
 
                         ImGui.EndTabItem();
                     }
@@ -149,6 +161,11 @@ namespace GAEngine
                 ImGui.End();
             }
             #endregion
+
+            foreach (var entity in _entities)
+            {
+                entity.Rotate(0f, 0.0001f, 0f);
+            }
         }
 
         protected override void OnUnload(EventArgs e)

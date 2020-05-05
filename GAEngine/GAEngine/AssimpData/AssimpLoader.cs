@@ -1,20 +1,17 @@
 ﻿using Assimp;
 using Assimp.Configs;
+using GAEngine.Utils;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace GAEngine.Assimp
+
+namespace GAEngine.AssimpData
 {
     class AssimpLoader
     {
@@ -29,7 +26,7 @@ namespace GAEngine.Assimp
 
         public AssimpLoader()
         {
-            String fileName = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Res\head.fbx");
+            String fileName = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Res\terrain.fbx");
 
             AssimpContext importer = new AssimpContext();
             importer.SetConfig(new NormalSmoothingAngleConfig(66.0f));
@@ -55,7 +52,7 @@ namespace GAEngine.Assimp
         private void ComputeBoundingBox(Node node, ref Vector3 min, ref Vector3 max, ref Matrix4 trafo)
         {
             Matrix4 prev = trafo;
-            trafo = Matrix4.Mult(prev, FromMatrix(node.Transform));
+            trafo = Matrix4.Mult(prev, node.Transform.FromMatrix());
 
             if (node.HasMeshes)
             {
@@ -64,7 +61,7 @@ namespace GAEngine.Assimp
                     Mesh mesh = m_model.Meshes[index];
                     for (int i = 0; i < mesh.VertexCount; i++)
                     {
-                        Vector3 tmp = FromVector(mesh.Vertices[i]);
+                        Vector3 tmp = mesh.Vertices[i].FromVector();
                         Vector3.TransformVector(ref tmp, ref trafo, out tmp);
 
                         min.X = Math.Min(min.X, tmp.X);
@@ -148,7 +145,7 @@ namespace GAEngine.Assimp
 
         private void RecursiveRender(Scene scene, Node node)
         {
-            Matrix4 m = FromMatrix(node.Transform);
+            Matrix4 m = node.Transform.FromMatrix();
             m.Transpose();
             GL.PushMatrix();
             GL.MultMatrix(ref m);
@@ -183,20 +180,20 @@ namespace GAEngine.Assimp
 
                     foreach (Face face in mesh.Faces)
                     {
-                        BeginMode faceMode;
+                        OpenTK.Graphics.OpenGL.PrimitiveType faceMode;
                         switch (face.IndexCount)
                         {
                             case 1:
-                                faceMode = BeginMode.Points;
+                                faceMode = OpenTK.Graphics.OpenGL.PrimitiveType.Points;
                                 break;
                             case 2:
-                                faceMode = BeginMode.Lines;
+                                faceMode = OpenTK.Graphics.OpenGL.PrimitiveType.Lines;
                                 break;
                             case 3:
-                                faceMode = BeginMode.Triangles;
+                                faceMode = OpenTK.Graphics.OpenGL.PrimitiveType.Triangles;
                                 break;
                             default:
-                                faceMode = BeginMode.Polygon;
+                                faceMode = OpenTK.Graphics.OpenGL.PrimitiveType.Polygon;
                                 break;
                         }
 
@@ -206,19 +203,19 @@ namespace GAEngine.Assimp
                             int indice = face.Indices[i];
                             if (hasColors)
                             {
-                                Color4 vertColor = FromColor(mesh.VertexColorChannels[0][indice]);
+                                Color4 vertColor = mesh.VertexColorChannels[0][indice].FromColor();
                             }
                             if (mesh.HasNormals)
                             {
-                                Vector3 normal = FromVector(mesh.Normals[indice]);
+                                Vector3 normal = mesh.Normals[indice].FromVector();
                                 GL.Normal3(normal);
                             }
                             if (hasTexCoords)
                             {
-                                Vector3 uvw = FromVector(mesh.TextureCoordinateChannels[0][indice]);
+                                Vector3 uvw = mesh.TextureCoordinateChannels[0][indice].FromVector();
                                 GL.TexCoord2(uvw.X, 1 - uvw.Y);
                             }
-                            Vector3 pos = FromVector(mesh.Vertices[indice]);
+                            Vector3 pos = mesh.Vertices[indice].FromVector();
                             GL.Vertex3(pos);
                         }
                         GL.End();
@@ -269,28 +266,28 @@ namespace GAEngine.Assimp
             Color4 color = new Color4(.8f, .8f, .8f, 1.0f);
             if (mat.HasColorDiffuse)
             {
-                // color = FromColor(mat.ColorDiffuse);
+                color = mat.ColorDiffuse.FromColor();
             }
             GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Diffuse, color);
 
             color = new Color4(0, 0, 0, 1.0f);
             if (mat.HasColorSpecular)
             {
-                color = FromColor(mat.ColorSpecular);
+                color = mat.ColorSpecular.FromColor();
             }
             GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Specular, color);
 
             color = new Color4(.2f, .2f, .2f, 1.0f);
             if (mat.HasColorAmbient)
             {
-                color = FromColor(mat.ColorAmbient);
+                color = mat.ColorAmbient.FromColor();
             }
             GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, color);
 
             color = new Color4(0, 0, 0, 1.0f);
             if (mat.HasColorEmissive)
             {
-                color = FromColor(mat.ColorEmissive);
+                color = mat.ColorEmissive.FromColor();
             }
             GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Emission, color);
 
@@ -308,45 +305,6 @@ namespace GAEngine.Assimp
             GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Shininess, shininess * strength);
         }
 
-        private Matrix4 FromMatrix(Matrix4x4 mat)
-        {
-            Matrix4 m = new Matrix4();
-            m.M11 = mat.A1;
-            m.M12 = mat.A2;
-            m.M13 = mat.A3;
-            m.M14 = mat.A4;
-            m.M21 = mat.B1;
-            m.M22 = mat.B2;
-            m.M23 = mat.B3;
-            m.M24 = mat.B4;
-            m.M31 = mat.C1;
-            m.M32 = mat.C2;
-            m.M33 = mat.C3;
-            m.M34 = mat.C4;
-            m.M41 = mat.D1;
-            m.M42 = mat.D2;
-            m.M43 = mat.D3;
-            m.M44 = mat.D4;
-            return m;
-        }
 
-        private Vector3 FromVector(Vector3D vec)
-        {
-            Vector3 v;
-            v.X = vec.X;
-            v.Y = vec.Y;
-            v.Z = vec.Z;
-            return v;
-        }
-
-        private Color4 FromColor(Color4D color)
-        {
-            Color4 c;
-            c.R = color.R;
-            c.G = color.G;
-            c.B = color.B;
-            c.A = color.A;
-            return c;
-        }
     }
 }
