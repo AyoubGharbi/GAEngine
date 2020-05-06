@@ -6,7 +6,6 @@ using GAEngine.Utils;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System;
-using System.Drawing;
 
 namespace GAEngine.RenderEngine
 {

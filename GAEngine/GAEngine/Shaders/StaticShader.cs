@@ -1,12 +1,13 @@
 ﻿using GAEngine.Lights;
 using OpenTK;
+using System;
 
 namespace GAEngine.Shaders
 {
     class StaticShader : ShaderProgram
     {
-        private const string VERTEX_FILE = "Shaders/VertexShader.txt";
-        private const string FRAGMENT_FILE = "Shaders/FragmentShader.txt";
+        private const string VERTEX_FILE = "shaders/VertexShader.txt";
+        private const string FRAGMENT_FILE = "shaders/FragmentShader.txt";
 
         private int _locationViewMatrix;
         private int _locationTransformMatrix;
@@ -14,7 +15,9 @@ namespace GAEngine.Shaders
         private int _locationLightColor;
         private int _locationLightPosition;
 
-        public StaticShader() : base(VERTEX_FILE, FRAGMENT_FILE) { }
+        public StaticShader() : base(VERTEX_FILE, FRAGMENT_FILE) 
+        { 
+        }
 
         protected override void BindAttributes()
         {

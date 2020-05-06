@@ -10,11 +10,11 @@ namespace GAEngine.Entities
 {
     class Entity
     {
+        private float _scale;
+        private Vector3 _position;
         private string _entityName;
         private TexturedModel _texturedModel;
-        private Vector3 _position;
         private float _rotationX, _rotationY, _rotationZ;
-        private float _scale;
 
         public string EntityName => _entityName;
 
