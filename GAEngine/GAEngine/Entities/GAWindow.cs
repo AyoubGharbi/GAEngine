@@ -11,6 +11,8 @@ using ImGuiNET;
 using GAEngine.AssimpData;
 using System.Collections.Generic;
 using GAEngine.Utils;
+using System.IO;
+using OpenTK.Input;
 
 namespace GAEngine
 {
@@ -30,9 +32,9 @@ namespace GAEngine
         private GAEngine.Entities.Camera _camera;
         private readonly List<Entity> _entities = new List<Entity>();
 
-        public GAWindow() : base(800, 800, new GraphicsMode(32, 8, 0, 32), "GAEngine")
+        public GAWindow()
+            : base(800, 800, new GraphicsMode(32, 8, 0, 32), "GAEngine", GameWindowFlags.Fullscreen)
         {
-            TargetRenderFrequency = 60;
         }
 
         protected override void OnLoad(EventArgs e)
@@ -41,34 +43,30 @@ namespace GAEngine
             _renderer = new Renderer();
             _staticShader = new StaticShader();
             _camera = new GAEngine.Entities.Camera();
-            _light = new Lights.Light(new Vector3(1, 1, 1), new Vector3(0, 0f, -15f));
-
-            //testing purpose
-            //_camera.Move(-4.3f, 4.3f, 21f);
-            //_light.Position = new Vector3(0f, 15f, 3.5f);
+            _light = new Lights.Light(new Vector3(1, .5f, .5f), new Vector3(0, 0f, -15f));
 
             _imGuiController = new ImGuiController(Width, Height);
 
             _assimpLoader = new AssimpLoader();
+            _assimpLoader.LoadModel("res/terrain.fbx");
 
-            var mesh = _assimpLoader.Model.Meshes[0];
+            var mesh = _assimpLoader.FirstModel().Meshes[0];
             _specialRaw = _loader.LoadToVAO(positions: mesh.Vertices.Vector3ToFloat(),
                                             texCoords: mesh.TextureCoordinateChannels[0].Vector2ToFloat(),
                                             normals: mesh.Normals.Vector3ToFloat(),
                                             indices: mesh.GetIndices());
 
 
-            _specialTexture = ContentPipe.LoadTexture2D("Res/terrainTex.png");
+            _specialTexture = ContentPipe.LoadTexture2D("res/terrainTex.png");
             _specialTextured = new TexturedModel(_specialRaw, _specialTexture);
 
-            _entities.Add(new Entity("Terrain", _specialTextured, new Vector3(0, 0, -10f), 0, 0, 0f, 1f));
+            _entities.Add(new Entity("Terrain", _specialTextured, new Vector3(0, 0, -2f), 0, 0, 0f, 1f));
         }
 
         protected override void OnResize(EventArgs e)
         {
             GL.Viewport(0, 0, Width, Height);
 
-            _assimpLoader.Resize(Width, Height);
             _imGuiController.WindowResized(Width, Height);
         }
 
@@ -107,18 +105,22 @@ namespace GAEngine
 
                         if (ImGui.BeginTabItem(entity.EntityName))
                         {
-                            var rotationX = _entities[i].RotationX;
+                            var position = entity.Position.Vector3ToV3();
+                            ImGui.SliderFloat3("Position", ref position, -10, 10);
+
+                            var rotationX = entity.RotationX;
                             ImGui.SliderFloat("Rotation X", ref rotationX, -5, 5f);
 
-                            var rotationY = _entities[i].RotationY;
+                            var rotationY = entity.RotationY;
                             ImGui.SliderFloat("Rotation Y", ref rotationY, -5, 5f);
 
-                            var scale = _entities[i].Scaling;
+                            var scale = entity.Scaling;
                             ImGui.SliderFloat("Scale", ref scale, 0.1f, 5.0f);
 
-                            _entities[i].Scale(scale);
-                            _entities[i].RotationX = rotationX;
-                            _entities[i].RotationY = rotationY;
+                            entity.Scale(scale);
+                            entity.RotationX = rotationX;
+                            entity.RotationY = rotationY;
+                            entity.Position = position.Vector3ToV3();
 
                             ImGui.EndTabItem();
                         }
@@ -132,13 +134,13 @@ namespace GAEngine
                         _camera.FOV = fov;
 
                         var position = _camera.Position.Vector3ToV3();
-                        ImGui.SliderFloat3("Position", ref position, -50, 50);
+                        ImGui.SliderFloat3("Position", ref position, -15f, 15f);
                         _camera.Move(position.X, position.Y, position.Z);
 
                         var rotationX = _camera.Yaw;
                         var rotationY = _camera.Pitch;
-                        ImGui.SliderFloat("Rotation X", ref rotationX, -50f,50f);
-                        ImGui.SliderFloat("Rotation Y", ref rotationY, -50, 50f);
+                        ImGui.SliderFloat("Rotation X", ref rotationX, -15f, 15f);
+                        ImGui.SliderFloat("Rotation Y", ref rotationY, -15f, 15f);
 
                         _camera.Yaw = rotationX;
                         _camera.Pitch = rotationY;
@@ -150,7 +152,7 @@ namespace GAEngine
                     if (ImGui.BeginTabItem("Light"))
                     {
                         var position = _light.Position.Vector3ToV3();
-                        ImGui.SliderFloat3("Position", ref position, -180f, 180f);
+                        ImGui.SliderFloat3("Position", ref position, -50f, 50f);
                         _light.Position = position.Vector3ToV3();
                         ImGui.EndTabItem();
                     }
@@ -164,15 +166,22 @@ namespace GAEngine
 
             foreach (var entity in _entities)
             {
-                entity.Rotate(0f, 0.0001f, 0f);
+                entity.Rotate(0f, 0.00001f, 0f);
+            }
+
+            // inputs
+            KeyboardState keyboardState = Keyboard.GetState();
+            MouseState mouseState = Mouse.GetState();
+
+            if (keyboardState.IsKeyDown(Key.Escape))
+            {
+                Exit();
             }
         }
 
         protected override void OnUnload(EventArgs e)
         {
             base.OnUnload(e);
-
-            _assimpLoader.Unload();
         }
 
         protected override void OnClosed(EventArgs e)
