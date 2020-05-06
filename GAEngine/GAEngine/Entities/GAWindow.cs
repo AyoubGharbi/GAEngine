@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using GAEngine.Utils;
 using System.IO;
 using OpenTK.Input;
+using GAEngine.Inputs;
 
 namespace GAEngine
 {
@@ -32,13 +33,17 @@ namespace GAEngine
         private GAEngine.Entities.Camera _camera;
         private readonly List<Entity> _entities = new List<Entity>();
 
+        private InputsHandler _inputsHandler;
+
         public GAWindow()
-            : base(800, 800, new GraphicsMode(32, 8, 0, 32), "GAEngine", GameWindowFlags.Fullscreen)
+            : base(800, 800, new GraphicsMode(32, 8, 0, 32), "GAEngine", GameWindowFlags.FixedWindow)
         {
         }
 
         protected override void OnLoad(EventArgs e)
         {
+            _inputsHandler = new InputsHandler();
+
             _loader = new Loader();
             _renderer = new Renderer();
             _staticShader = new StaticShader();
@@ -89,6 +94,8 @@ namespace GAEngine
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
+            _inputsHandler.Update();
+
             #region IMGUI
             _imGuiController.Update(this, (float)e.Time);
 
@@ -169,11 +176,8 @@ namespace GAEngine
                 entity.Rotate(0f, 0.00001f, 0f);
             }
 
-            // inputs
-            KeyboardState keyboardState = Keyboard.GetState();
-            MouseState mouseState = Mouse.GetState();
 
-            if (keyboardState.IsKeyDown(Key.Escape))
+            if (_inputsHandler.Data.Escape)
             {
                 Exit();
             }
