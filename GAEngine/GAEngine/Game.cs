@@ -71,32 +71,8 @@ namespace GAEngine
 
             _assimpLoader = new AssimpLoader();
 
-
-            _camera.Move(0, 5f, 0);
-
-            for (int i = 0; i < 2; i++)
-            {
-                _assimpLoader.LoadModel("res/head.fbx");
-
-                var mesh = _assimpLoader.FirstModel().Meshes[0];
-                var raw = _loader.LoadToVAO(positions: mesh.Vertices.Vector3ToFloat(),
-                                                texCoords: mesh.TextureCoordinateChannels[0].Vector2ToFloat(),
-                                                normals: mesh.Normals.Vector3ToFloat(),
-                                                indices: mesh.GetIndices());
-                _specialRaw.Add(raw);
-
-                var texture = ContentPipe.LoadTexture2D("res/head.png");
-                _specialTexture.Add(texture);
-
-                var rawTextured = new TexturedModel(raw, texture);
-
-                _specialTextured.Add(rawTextured);
-
-                texture.ShineDamper = 10;
-                texture.Reflectivity = 1;
-
-                _entities.Add(new Entity("Head", rawTextured, new Vector3(i * 1.12f, 0, -35f), 0, 0, 0f, .5f));
-            }
+            AddEntity("Head", "res/head.fbx", "res/head.png");
+            AddEntity("JetPack", "res/jetpack.fbx", "res/jetpack.png");
         }
 
         private void ResizeCallback(object sender, EventArgs e)
@@ -216,6 +192,7 @@ namespace GAEngine
             }
             #endregion
 
+            #region Tests
             _camera.Move();
 
             foreach (var entity in _entities)
@@ -223,15 +200,18 @@ namespace GAEngine
                 entity.Rotate(0f, 0.01f, 0f);
             }
 
+            // popup entity
             if (_inputsHandler.Data.Space)
             {
                 _entities.Remove(_entities.Last());
             }
 
+            // exit game
             if (_inputsHandler.Data.Escape)
             {
                 _gaWindow.Exit();
             }
+            #endregion
         }
 
         private void ClosedCallback(object sender, EventArgs e)
@@ -240,5 +220,28 @@ namespace GAEngine
             _staticShader.CleanUp();
         }
 
+        void AddEntity(string name, string modelPath, string texturePath)
+        {
+            var model = _assimpLoader.LoadModel(modelPath);
+
+            var mesh = model.Meshes[0];
+            var raw = _loader.LoadToVAO(positions: mesh.Vertices.Vector3ToFloat(),
+                                            texCoords: mesh.TextureCoordinateChannels[0].Vector2ToFloat(),
+                                            normals: mesh.Normals.Vector3ToFloat(),
+                                            indices: mesh.GetIndices());
+            _specialRaw.Add(raw);
+
+            var texture = ContentPipe.LoadTexture2D(texturePath);
+            _specialTexture.Add(texture);
+
+            var rawTextured = new TexturedModel(raw, texture);
+
+            _specialTextured.Add(rawTextured);
+
+            texture.ShineDamper = 10;
+            texture.Reflectivity = 1;
+
+            _entities.Add(new Entity(name, rawTextured, new Vector3(0f, 0f, -35f), 0, 0, 0f, .5f));
+        }
     }
 }

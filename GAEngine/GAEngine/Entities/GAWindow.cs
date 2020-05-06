@@ -20,7 +20,7 @@ namespace GAEngine
     public class GAWindow : GameWindow
     {
         public GAWindow()
-            : base(800, 800, new GraphicsMode(32, 8, 0, 32), "GAEngine", GameWindowFlags.FixedWindow)
+            : base(1280, 720, new GraphicsMode(32, 8, 0, 32), "GAEngine", GameWindowFlags.FixedWindow)
         {
         }
     }
