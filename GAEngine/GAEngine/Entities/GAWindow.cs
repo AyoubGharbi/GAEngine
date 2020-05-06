@@ -171,15 +171,14 @@ namespace GAEngine
             }
             #endregion
 
-            foreach (var entity in _entities)
-            {
-                entity.Rotate(0f, 0.00001f, 0f);
-            }
-
-
             if (_inputsHandler.Data.Escape)
             {
                 Exit();
+            }
+            for (int i = 0; i < _entities.Count; i++)
+            {
+                var entity = _entities[i];
+                entity.RotationY += _inputsHandler.Data.MouseDeltaX;
             }
         }
 
