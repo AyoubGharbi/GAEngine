@@ -21,9 +21,9 @@ namespace GAEngine
     {
         private ImGuiController _imGuiController;
 
-        private RawModel _specialRaw;
-        private ModelTexture _specialTexture;
-        private TexturedModel _specialTextured;
+        private List<RawModel> _specialRaw = new List<RawModel>();
+        private List<ModelTexture> _specialTexture = new List<ModelTexture>();
+        private List<TexturedModel> _specialTextured = new List<TexturedModel>();
 
         private Loader _loader;
         private Renderer _renderer;
@@ -48,24 +48,38 @@ namespace GAEngine
             _renderer = new Renderer();
             _staticShader = new StaticShader();
             _camera = new GAEngine.Entities.Camera();
-            _light = new Lights.Light(new Vector3(1, .5f, .5f), new Vector3(0, 0f, -15f));
+            _light = new Lights.Light(new Vector3(1, 1f, 1f), new Vector3(0f, 0f, 0f));
 
             _imGuiController = new ImGuiController(Width, Height);
 
             _assimpLoader = new AssimpLoader();
-            _assimpLoader.LoadModel("res/terrain.fbx");
-
-            var mesh = _assimpLoader.FirstModel().Meshes[0];
-            _specialRaw = _loader.LoadToVAO(positions: mesh.Vertices.Vector3ToFloat(),
-                                            texCoords: mesh.TextureCoordinateChannels[0].Vector2ToFloat(),
-                                            normals: mesh.Normals.Vector3ToFloat(),
-                                            indices: mesh.GetIndices());
 
 
-            _specialTexture = ContentPipe.LoadTexture2D("res/terrainTex.png");
-            _specialTextured = new TexturedModel(_specialRaw, _specialTexture);
+            _camera.Move(0, 5f, 0);
 
-            _entities.Add(new Entity("Terrain", _specialTextured, new Vector3(0, 0, -2f), 0, 0, 0f, 1f));
+            for (int i = 0; i < 2; i++)
+            {
+                _assimpLoader.LoadModel("res/head.fbx");
+
+                var mesh = _assimpLoader.FirstModel().Meshes[0];
+                var raw = _loader.LoadToVAO(positions: mesh.Vertices.Vector3ToFloat(),
+                                                texCoords: mesh.TextureCoordinateChannels[0].Vector2ToFloat(),
+                                                normals: mesh.Normals.Vector3ToFloat(),
+                                                indices: mesh.GetIndices());
+                _specialRaw.Add(raw);
+
+                var texture = ContentPipe.LoadTexture2D("res/head.png");
+                _specialTexture.Add(texture);
+
+                var rawTextured = new TexturedModel(raw, texture);
+
+                _specialTextured.Add(rawTextured);
+
+                texture.ShineDamper = 10;
+                texture.Reflectivity = 1;
+
+                _entities.Add(new Entity("Head", rawTextured, new Vector3(i, 0, -35f), 0, 0, 0f, .5f));
+            }
         }
 
         protected override void OnResize(EventArgs e)
@@ -109,9 +123,9 @@ namespace GAEngine
                     for (int i = 0; i < _entities.Count; i++)
                     {
                         var entity = _entities[i];
-
                         if (ImGui.BeginTabItem(entity.EntityName))
                         {
+                            ImGui.PushID(i);
                             var position = entity.Position.Vector3ToV3();
                             ImGui.SliderFloat3("Position", ref position, -10, 10);
 
@@ -124,14 +138,25 @@ namespace GAEngine
                             var scale = entity.Scaling;
                             ImGui.SliderFloat("Scale", ref scale, 0.1f, 5.0f);
 
+                            var shineDamping = entity.Model.Texture.ShineDamper;
+                            ImGui.SliderFloat("Shine Damp", ref shineDamping, 0, 3f);
+                            entity.Model.Texture.ShineDamper = shineDamping;
+
+                            var reflectivity = entity.Model.Texture.Reflectivity;
+                            ImGui.SliderFloat("Reflectivity", ref reflectivity, 0, 5f);
+                            entity.Model.Texture.Reflectivity = reflectivity;
+
                             entity.Scale(scale);
                             entity.RotationX = rotationX;
                             entity.RotationY = rotationY;
                             entity.Position = position.Vector3ToV3();
 
+                            ImGui.PopID();
+
                             ImGui.EndTabItem();
                         }
                     }
+
 
                     // camera
                     if (ImGui.BeginTabItem("Camera"))
@@ -161,6 +186,7 @@ namespace GAEngine
                         var position = _light.Position.Vector3ToV3();
                         ImGui.SliderFloat3("Position", ref position, -50f, 50f);
                         _light.Position = position.Vector3ToV3();
+
                         ImGui.EndTabItem();
                     }
 
@@ -171,14 +197,16 @@ namespace GAEngine
             }
             #endregion
 
+            _camera.Move();
+
+            foreach (var entity in _entities)
+            {
+                entity.Rotate(0f, 0.01f, 0f);
+            }
+
             if (_inputsHandler.Data.Escape)
             {
                 Exit();
-            }
-            for (int i = 0; i < _entities.Count; i++)
-            {
-                var entity = _entities[i];
-                entity.RotationY += _inputsHandler.Data.MouseDeltaX;
             }
         }
 

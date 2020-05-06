@@ -14,9 +14,11 @@ namespace GAEngine.Shaders
         private int _locationProjectionMatrix;
         private int _locationLightColor;
         private int _locationLightPosition;
+        private int _locationShineDamper;
+        private int _locationReflectivity;
 
-        public StaticShader() : base(VERTEX_FILE, FRAGMENT_FILE) 
-        { 
+        public StaticShader() : base(VERTEX_FILE, FRAGMENT_FILE)
+        {
         }
 
         protected override void BindAttributes()
@@ -33,6 +35,10 @@ namespace GAEngine.Shaders
             _locationViewMatrix = base.GetUniformLocation("viewMatrix");
             _locationLightColor = base.GetUniformLocation("lightColor");
             _locationLightPosition = base.GetUniformLocation("lightPos");
+            Console.WriteLine("Specular before");
+            _locationShineDamper = base.GetUniformLocation("shineDamper");
+            _locationReflectivity = base.GetUniformLocation("reflectivity");
+            Console.WriteLine("Specular after");
         }
 
         public void LoadTransformMatrix(Matrix4 matrix)
@@ -54,6 +60,12 @@ namespace GAEngine.Shaders
         {
             base.LoadVector(_locationLightColor, light.Color);
             base.LoadVector(_locationLightPosition, light.Position);
+        }
+
+        public void LoadShine(float damper, float reflectivity)
+        {
+            base.LoadFloat(_locationShineDamper, damper);
+            base.LoadFloat(_locationReflectivity, reflectivity);
         }
     }
 }

@@ -47,6 +47,9 @@ namespace GAEngine.RenderEngine
                                                                       entity.RotationZ,
                                                                       entity.Scaling);
             shader.LoadTransformMatrix(transformMatrix);
+
+            shader.LoadShine(texturedModel.Texture.ShineDamper, texturedModel.Texture.Reflectivity);
+
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, texturedModel.Texture.ID);
             GL.DrawElements(PrimitiveType.Triangles, rawModel.VertexCount, DrawElementsType.UnsignedInt, IntPtr.Zero);
