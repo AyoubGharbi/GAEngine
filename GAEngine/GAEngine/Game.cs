@@ -71,8 +71,12 @@ namespace GAEngine
 
             _assimpLoader = new AssimpLoader();
 
-            AddEntity("Head", "res/head.fbx", "res/head.png");
-            AddEntity("JetPack", "res/jetpack.fbx", "res/jetpack.png");
+            for (int i = 0; i < 5; i++)
+            {
+                AddEntity("Head", "res/head.fbx", "res/head.png", new Vector3(i * 5f - 0.2f, 0f, -35f));
+
+                //AddEntity("JetPack", "res/jetpack.fbx", "res/jetpack.png");
+            }
         }
 
         private void ResizeCallback(object sender, EventArgs e)
@@ -118,10 +122,11 @@ namespace GAEngine
                     // entities
                     for (int i = 0; i < _entities.Count; i++)
                     {
+                        ImGui.PushID(i);
+
                         var entity = _entities[i];
-                        if (ImGui.BeginTabItem(entity.EntityName))
+                        if (ImGui.BeginTabItem(entity.ID.ToString()))
                         {
-                            ImGui.PushID(i);
                             var position = entity.Position.Vector3ToV3();
                             ImGui.SliderFloat3("Position", ref position, -10, 10);
 
@@ -147,10 +152,14 @@ namespace GAEngine
                             entity.RotationY = rotationY;
                             entity.Position = position.Vector3ToV3();
 
-                            ImGui.PopID();
+                            if (ImGui.Button("Change Entity"))
+                            {
+                                UpdateEntity(entity.ID, "res/terrain.fbx", "res/terrainTex.png");
+                            }
 
                             ImGui.EndTabItem();
                         }
+                        ImGui.PopID();
                     }
 
                     // camera
@@ -161,7 +170,7 @@ namespace GAEngine
                         _camera.FOV = fov;
 
                         var position = _camera.Position.Vector3ToV3();
-                        ImGui.SliderFloat3("Position", ref position, -15f, 15f);
+                        ImGui.SliderFloat3("Position", ref position, -50f, 50f);
                         _camera.Move(position.X, position.Y, position.Z);
 
                         var rotationX = _camera.Yaw;
@@ -188,6 +197,7 @@ namespace GAEngine
                     ImGui.EndTabBar();
                 }
 
+
                 ImGui.End();
             }
             #endregion
@@ -203,7 +213,8 @@ namespace GAEngine
             // popup entity
             if (_inputsHandler.Data.Space)
             {
-                _entities.Remove(_entities.Last());
+                //_entities.Remove(_entities.Last());
+                //UpdateEntity(0, "res/terrain.fbx", "res/terrainTex.png");
             }
 
             // exit game
@@ -220,7 +231,7 @@ namespace GAEngine
             _staticShader.CleanUp();
         }
 
-        void AddEntity(string name, string modelPath, string texturePath)
+        void AddEntity(string name, string modelPath, string texturePath, Vector3 position)
         {
             var model = _assimpLoader.LoadModel(modelPath);
 
@@ -241,7 +252,32 @@ namespace GAEngine
             texture.ShineDamper = 10;
             texture.Reflectivity = 1;
 
-            _entities.Add(new Entity(name, rawTextured, new Vector3(0f, 0f, -35f), 0, 0, 0f, .5f));
+            _entities.Add(new Entity(name, rawTextured, position, 0, 0, 0f, .2f));
+        }
+
+        void UpdateEntity(int entityID, string newModel, string newTexture)
+        {
+            var arrayID = entityID;
+            var entity = _entities[arrayID];
+
+            var model = _assimpLoader.LoadModel(newModel);
+
+            var mesh = model.Meshes[0];
+            var raw = _loader.LoadToVAO(positions: mesh.Vertices.Vector3ToFloat(),
+                                            texCoords: mesh.TextureCoordinateChannels[0].Vector2ToFloat(),
+                                            normals: mesh.Normals.Vector3ToFloat(),
+                                            indices: mesh.GetIndices());
+
+
+            var texture = ContentPipe.LoadTexture2D(newTexture);
+
+            _specialRaw[arrayID] = raw;
+            _specialTexture[arrayID] = texture;
+
+            entity.Model.Raw = raw;
+            entity.Model.Texture = texture;
+
+            entity.Scale(5f);
         }
     }
 }
