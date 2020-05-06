@@ -154,7 +154,12 @@ namespace GAEngine
 
                             if (ImGui.Button("Change Entity"))
                             {
-                                UpdateEntity(entity.ID, "res/terrain.fbx", "res/terrainTex.png");
+                                UpdateEntity(entity.ID, "res/jetpack.fbx", "res/jetpack.png");
+                            }
+
+                            if (ImGui.Button("Remove Entity"))
+                            {
+                                RemoveEntity(entity.ID);
                             }
 
                             ImGui.EndTabItem();
@@ -278,6 +283,11 @@ namespace GAEngine
             entity.Model.Texture = texture;
 
             entity.Scale(5f);
+        }
+
+        void RemoveEntity(int entityID)
+        {
+            _entities.RemoveAt(entityID);
         }
     }
 }
