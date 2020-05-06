@@ -12,6 +12,9 @@ namespace GAEngine.Inputs
         #region keyboard
         private bool _escape = false;
         public bool Escape { get => _escape; set => _escape = value; }
+
+        private bool _space = false;
+        public bool Space { get => _space; set => _space = value; }
         #endregion
 
         #region mouse

@@ -16,22 +16,18 @@ namespace GAEngine.AssimpData
     class AssimpLoader
     {
         private List<Scene> _models = new List<Scene>();
-        public List<Scene> AllModels => _models;
+        public List<Scene> Models => _models;
 
-        public void LoadModel(string modelPath)
+        public Scene LoadModel(string modelPath)
         {
             AssimpContext importer = new AssimpContext();
             importer.SetConfig(new NormalSmoothingAngleConfig(66.0f));
 
-            _models.Add(importer.ImportFile(modelPath, PostProcessPreset.TargetRealTimeMaximumQuality));
-        }
+            var model = importer.ImportFile(modelPath, PostProcessPreset.TargetRealTimeMaximumQuality);
 
-        public Scene FirstModel()
-        {
-            if (_models.Count <= 0)
-                return null;
+            _models.Add(model);
 
-            return _models[0];
+            return model;
         }
     }
 }

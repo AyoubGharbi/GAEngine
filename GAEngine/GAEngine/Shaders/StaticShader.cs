@@ -35,10 +35,8 @@ namespace GAEngine.Shaders
             _locationViewMatrix = base.GetUniformLocation("viewMatrix");
             _locationLightColor = base.GetUniformLocation("lightColor");
             _locationLightPosition = base.GetUniformLocation("lightPos");
-            Console.WriteLine("Specular before");
             _locationShineDamper = base.GetUniformLocation("shineDamper");
             _locationReflectivity = base.GetUniformLocation("reflectivity");
-            Console.WriteLine("Specular after");
         }
 
         public void LoadTransformMatrix(Matrix4 matrix)
