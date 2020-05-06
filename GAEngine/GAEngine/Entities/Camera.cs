@@ -15,16 +15,12 @@ namespace GAEngine.Entities
         private float _roll;
         public float Roll { get => _roll; set => _roll = value; }
 
-        private float _pitch;
+        private float _pitch = 0.0f;
         public float Pitch { get => _pitch; set => _pitch = value; }
 
         public Vector3 Position => _position;
 
-        private Vector3 _position = new Vector3(0f, 0f, 0f);
-
-        public Camera()
-        {
-        }
+        private Vector3 _position = Vector3.Zero;
 
         public void Move()
         {
@@ -32,25 +28,21 @@ namespace GAEngine.Entities
 
             if (state.IsKeyDown(Key.Down))
             {
-                Console.WriteLine("Move (-Z)");
                 _position.Z -= 0.02f;
             }
 
             if (state.IsKeyDown(Key.Up))
             {
-                Console.WriteLine("Move (Z)");
                 _position.Z += 0.02f;
             }
 
             if (state.IsKeyDown(Key.D))
             {
-                Console.WriteLine("Move (X)");
                 _position.X -= 0.02f;
             }
 
             if (state.IsKeyDown(Key.A))
             {
-                Console.WriteLine("Move (-X)");
                 _position.X += 0.02f;
             }
         }

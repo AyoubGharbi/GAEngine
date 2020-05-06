@@ -48,12 +48,12 @@ namespace GAEngine
             _renderer = new Renderer();
             _staticShader = new StaticShader();
             _camera = new GAEngine.Entities.Camera();
-            _light = new Lights.Light(new Vector3(1, .5f, .5f), new Vector3(0, 0f, -15f));
+            _light = new Lights.Light(new Vector3(1, 1f, 1f), new Vector3(0f, 0f, 0f));
 
             _imGuiController = new ImGuiController(Width, Height);
 
             _assimpLoader = new AssimpLoader();
-            _assimpLoader.LoadModel("res/terrain.fbx");
+            _assimpLoader.LoadModel("res/head.fbx");
 
             var mesh = _assimpLoader.FirstModel().Meshes[0];
             _specialRaw = _loader.LoadToVAO(positions: mesh.Vertices.Vector3ToFloat(),
@@ -62,10 +62,15 @@ namespace GAEngine
                                             indices: mesh.GetIndices());
 
 
-            _specialTexture = ContentPipe.LoadTexture2D("res/terrainTex.png");
+            _specialTexture = ContentPipe.LoadTexture2D("res/head.png");
             _specialTextured = new TexturedModel(_specialRaw, _specialTexture);
 
-            _entities.Add(new Entity("Terrain", _specialTextured, new Vector3(0, 0, -2f), 0, 0, 0f, 1f));
+            _specialTexture.ShineDamper = 10;
+            _specialTexture.Reflectivity = 1;
+
+            _camera.Move(0, 5f, 0);
+
+            _entities.Add(new Entity("Head", _specialTextured, new Vector3(0, 0, -35f), 0, 0, 0f, 1f));
         }
 
         protected override void OnResize(EventArgs e)
@@ -171,14 +176,16 @@ namespace GAEngine
             }
             #endregion
 
+            _camera.Move();
+
+            foreach (var entity in _entities)
+            {
+                entity.Rotate(0f, 0.01f, 0f);
+            }
+
             if (_inputsHandler.Data.Escape)
             {
                 Exit();
-            }
-            for (int i = 0; i < _entities.Count; i++)
-            {
-                var entity = _entities[i];
-                entity.RotationY += _inputsHandler.Data.MouseDeltaX;
             }
         }
 
