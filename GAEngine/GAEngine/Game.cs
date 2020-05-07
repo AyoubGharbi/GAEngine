@@ -1,5 +1,4 @@
-﻿using GAEngine.AssimpData;
-using GAEngine.Entities;
+﻿using GAEngine.Entities;
 using GAEngine.IMGUI;
 using GAEngine.Inputs;
 using GAEngine.Models;
@@ -11,7 +10,9 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
+using System.Text;
 
 namespace GAEngine
 {
@@ -33,7 +34,6 @@ namespace GAEngine
         private Camera _camera;
         private Renderer _renderer;
         private Lights.Light _light;
-        private AssimpLoader _assimpLoader;
         private StaticShader _staticShader;
         private InputsHandler _inputsHandler;
 
@@ -69,8 +69,6 @@ namespace GAEngine
 
             _imGuiController = new ImGuiController(width, height);
 
-            _assimpLoader = new AssimpLoader();
-
             for (int i = 0; i < 5; i++)
             {
                 AddEntity("Head", "res/head.fbx", "res/head.png", new Vector3(i * 5f - 0.2f, 0f, -35f));
@@ -105,6 +103,7 @@ namespace GAEngine
 
             _gaWindow.SwapBuffers();
         }
+        string input = "jetpack";
 
         private void UpdateCallback(object sender, FrameEventArgs e)
         {
@@ -125,6 +124,7 @@ namespace GAEngine
                         ImGui.PushID(i);
 
                         var entity = _entities[i];
+
                         if (ImGui.BeginTabItem(entity.ID.ToString()))
                         {
                             var position = entity.Position.Vector3ToV3();
@@ -154,7 +154,10 @@ namespace GAEngine
 
                             if (ImGui.Button("Change Entity"))
                             {
-                                UpdateEntity(entity.ID, "res/jetpack.fbx", "res/jetpack.png");
+                                var newModelName = input;
+
+                                UpdateEntity(entity.ID, string.Format("res/{0}.fbx", newModelName),
+                                    string.Format("res/{0}.png", newModelName));
                             }
 
                             if (ImGui.Button("Remove Entity"))
@@ -164,6 +167,7 @@ namespace GAEngine
 
                             ImGui.EndTabItem();
                         }
+
                         ImGui.PopID();
                     }
 
@@ -238,7 +242,7 @@ namespace GAEngine
 
         void AddEntity(string name, string modelPath, string texturePath, Vector3 position)
         {
-            var model = _assimpLoader.LoadModel(modelPath);
+            var model = _loader.LoadModel(modelPath);
 
             var mesh = model.Meshes[0];
             var raw = _loader.LoadToVAO(positions: mesh.Vertices.Vector3ToFloat(),
@@ -265,7 +269,7 @@ namespace GAEngine
             var arrayID = entityID;
             var entity = _entities[arrayID];
 
-            var model = _assimpLoader.LoadModel(newModel);
+            var model = _loader.LoadModel(newModel);
 
             var mesh = model.Meshes[0];
             var raw = _loader.LoadToVAO(positions: mesh.Vertices.Vector3ToFloat(),
