@@ -28,22 +28,22 @@ namespace GAEngine.Entities
 
             if (state.IsKeyDown(Key.Down))
             {
-                _position.Z -= 0.02f;
+                _position.Z -= 0.5f;
             }
 
             if (state.IsKeyDown(Key.Up))
             {
-                _position.Z += 0.02f;
+                _position.Z += 0.5f;
             }
 
             if (state.IsKeyDown(Key.D))
             {
-                _position.X -= 0.02f;
+                _position.X -= 0.5f;
             }
 
             if (state.IsKeyDown(Key.A))
             {
-                _position.X += 0.02f;
+                _position.X += 0.5f;
             }
         }
 

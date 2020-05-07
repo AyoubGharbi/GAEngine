@@ -1,4 +1,6 @@
-﻿using GAEngine.Entities;
+﻿using GAEngine.Components;
+using GAEngine.ECS;
+using GAEngine.Entities;
 using GAEngine.Lights;
 using GAEngine.Models;
 using GAEngine.Shaders;
@@ -20,9 +22,9 @@ namespace GAEngine.RenderEngine
             GL.Enable(EnableCap.Lighting);
         }
 
-        public void Render(GAWindow window, Entity entity, StaticShader shader, Camera camera, Light light)
+        public void Render(GAWindow window, MeshComponent mesh, TransformComponent transform, StaticShader shader, Camera camera, Light light)
         {
-            TexturedModel texturedModel = entity.Model;
+            TexturedModel texturedModel = mesh.TexturedModel;
             RawModel rawModel = texturedModel.Raw;
             GL.BindVertexArray(rawModel.VAOID);
             GL.EnableVertexAttribArray(0);
@@ -39,13 +41,12 @@ namespace GAEngine.RenderEngine
 
             shader.LoadProjectionMatrix(projectionMatrix);
 
+            var scale = transform.Scale;
+            var position = transform.Position;
+            var rotation = transform.Rotation;
 
+            Matrix4 transformMatrix = UtilsMath.CreateTransformMatrix(position, rotation, scale);
 
-            Matrix4 transformMatrix = UtilsMath.CreateTransformMatrix(entity.Position,
-                                                                      entity.RotationX,
-                                                                      entity.RotationY,
-                                                                      entity.RotationZ,
-                                                                      entity.Scaling);
             shader.LoadTransformMatrix(transformMatrix);
 
             shader.LoadShine(texturedModel.Texture.ShineDamper, texturedModel.Texture.Reflectivity);
