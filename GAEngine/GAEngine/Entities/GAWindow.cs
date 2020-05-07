@@ -8,7 +8,6 @@ using OpenTK.Graphics.OpenGL;
 using System;
 using GAEngine.IMGUI;
 using ImGuiNET;
-using GAEngine.AssimpData;
 using System.Collections.Generic;
 using GAEngine.Utils;
 using System.IO;

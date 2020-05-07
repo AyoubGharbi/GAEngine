@@ -1,4 +1,6 @@
-﻿using OpenTK.Graphics.ES30;
+﻿using Assimp;
+using Assimp.Configs;
+using OpenTK.Graphics.ES30;
 using System;
 using System.Collections.Generic;
 
@@ -10,6 +12,8 @@ namespace GAEngine.RenderEngine
         private readonly List<int> _vbos = new List<int>();
         private readonly List<int> _textures = new List<int>();
 
+        private readonly List<Scene> _models = new List<Scene>();
+
         public RawModel LoadToVAO(float[] positions, float[] texCoords, float[] normals, int[] indices)
         {
             int vaoID = CreateVAO();
@@ -20,6 +24,18 @@ namespace GAEngine.RenderEngine
             UnbindVAO();
 
             return new RawModel(vaoID, indices.Length);
+        }
+
+        public Scene LoadModel(string modelPath)
+        {
+            AssimpContext importer = new AssimpContext();
+            importer.SetConfig(new NormalSmoothingAngleConfig(66.0f));
+
+            var model = importer.ImportFile(modelPath, PostProcessPreset.TargetRealTimeMaximumQuality);
+
+            _models.Add(model);
+
+            return model;
         }
 
         public int LoadTexture(string filePath)

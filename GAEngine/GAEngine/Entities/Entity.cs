@@ -10,6 +10,9 @@ namespace GAEngine.Entities
 {
     class Entity
     {
+        public static int ENTITY_GLOBAL_ID = -1;
+
+        private int _entityID;
         private float _scale;
         private Vector3 _position;
         private string _entityName;
@@ -17,6 +20,7 @@ namespace GAEngine.Entities
         private float _rotationX, _rotationY, _rotationZ;
 
         public string EntityName => _entityName;
+        public int ID => _entityID;
 
         public Entity(string name, TexturedModel model, Vector3 position, float rx, float ry, float rz, float scale)
         {
@@ -27,6 +31,8 @@ namespace GAEngine.Entities
             _rotationY = ry;
             _rotationZ = rz;
             _scale = scale;
+
+            _entityID = ++ENTITY_GLOBAL_ID;
         }
 
         public TexturedModel Model { get => _texturedModel; set => _texturedModel = value; }

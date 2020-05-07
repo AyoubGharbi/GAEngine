@@ -12,8 +12,9 @@ namespace GAEngine.Models
         private RawModel _rawModel;
         private ModelTexture _modelTexture;
 
-        public RawModel Raw => _rawModel;
-        public ModelTexture Texture => _modelTexture;
+        public RawModel Raw { get => _rawModel; set => _rawModel = value; }
+
+        public ModelTexture Texture { get => _modelTexture; set => _modelTexture = value; }
 
         public TexturedModel(RawModel model, ModelTexture modelTexture)
         {
