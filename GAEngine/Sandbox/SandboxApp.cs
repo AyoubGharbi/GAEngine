@@ -12,7 +12,7 @@ namespace Sandbox
         }
     }
 
-    public class Sandbox : Engine
+    public class Sandbox : World
     {
     }
 }

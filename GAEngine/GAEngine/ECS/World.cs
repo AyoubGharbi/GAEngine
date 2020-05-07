@@ -19,7 +19,7 @@ using System.Text;
 
 namespace GAEngine
 {
-    public class Engine
+    public class World
     {
         // OpenTK window wrapper
         private GAWindow _gaWindow;
@@ -37,10 +37,11 @@ namespace GAEngine
         private ComponentHandler<MeshComponent> _meshes;
         private ComponentHandler<TransformComponent> _transforms;
 
-        public Engine()
+        public World()
         {
             _gaWindow = new GAWindow();
 
+            // window callbacks
             _gaWindow.Load += LoadCallback;
             _gaWindow.Resize += ResizeCallback;
             _gaWindow.RenderFrame += RenderCallback;
@@ -70,29 +71,17 @@ namespace GAEngine
 
             _imGuiController = new ImGuiController(width, height);
 
-            _camera.Move(0f, 0f, 150f);
-            _camera.Pitch = 50f;
-            _camera.FOV = 100f;
-
             /// Optimize more this
             // 2500 entities => ~30 FPS
-            var headMesh = new MeshComponent("res/head.fbx", "res/head.png");
+            var entity = new Entity();
+            var headMesh = new MeshComponent("res/terrain.fbx", "res/color_hex_00.png");
 
-            for (int x = 0; x < 100; x++)
-            {
-                for (int z = 0; z < 25; z++)
-                {
-                    var entity = new Entity();
-
-                    _meshes.CreateEntity(entity, headMesh);
-                    _transforms.CreateEntity(entity,
-                        new TransformComponent(
-                            new Vector3(x * 5f, 0f, -50f * z),
-                            Vector3.Zero,
-                            new Vector3(.5f, .5f, .5f)));
-                }
-
-            }
+            _meshes.CreateEntity(entity, headMesh);
+            _transforms.CreateEntity(entity,
+                new TransformComponent(
+                    new Vector3(0, 0f, -50f),
+                    Vector3.Zero,
+                    Vector3.One));
         }
 
         private void ResizeCallback(object sender, EventArgs e)
@@ -154,9 +143,14 @@ namespace GAEngine
 
                         if (ImGui.BeginTabItem(entity.ID.ToString()))
                         {
-                            var scale = transformEntity.Scale.Vector3ToV3();
-                            ImGui.SliderFloat3("Scale", ref scale, 0.1f, 5.0f);
-                            transformEntity.Scale = scale.Vector3ToV3();
+                            var transScale = transformEntity.Scale.Vector3ToV3();
+                            float scale = transScale.X;
+                            ImGui.SliderFloat("Scale", ref scale, 0.1f, 5.0f);
+                            transformEntity.Scale = new Vector3(scale, scale, scale);
+
+                            var position = transformEntity.Position.Vector3ToV3();
+                            ImGui.SliderFloat3("Position", ref position, -500f, 500f);
+                            transformEntity.Position = position.Vector3ToV3();
 
                             var meshModel = entityMesh.TexturedModel;
                             var shineDamping = meshModel.Texture.ShineDamper;
@@ -181,13 +175,13 @@ namespace GAEngine
                         _camera.FOV = fov;
 
                         var position = _camera.Position.Vector3ToV3();
-                        ImGui.SliderFloat3("Position", ref position, -150f, 150f);
+                        ImGui.SliderFloat3("Position", ref position, -500f, 500f);
                         _camera.Move(position.X, position.Y, position.Z);
 
                         var rotationX = _camera.Yaw;
                         var rotationY = _camera.Pitch;
-                        ImGui.SliderFloat("Rotation X", ref rotationX, -15f, 15f);
-                        ImGui.SliderFloat("Rotation Y", ref rotationY, -50f, 50f);
+                        ImGui.SliderFloat("Rotation X", ref rotationX, -500f, 500f);
+                        ImGui.SliderFloat("Rotation Y", ref rotationY, -500f, 500f);
 
                         _camera.Yaw = rotationX;
                         _camera.Pitch = rotationY;
