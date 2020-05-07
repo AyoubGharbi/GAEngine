@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace GAEngine.Managers
 {
-    class ComponentManager<T> where T : IComponent
+    class ComponentHandler<T> where T : IComponent
     {
         private Stack<T> _components= new Stack<T>();
         private Stack<Entity> _entities = new Stack<Entity>();

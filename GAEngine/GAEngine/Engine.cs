@@ -34,8 +34,8 @@ namespace GAEngine
         private InputsHandler _inputsHandler;
 
         // ecs system
-        private ComponentManager<MeshComponent> _meshes;
-        private ComponentManager<TransformComponent> _transforms;
+        private ComponentHandler<MeshComponent> _meshes;
+        private ComponentHandler<TransformComponent> _transforms;
 
         public Engine()
         {
@@ -51,7 +51,8 @@ namespace GAEngine
 
         public void StartGame()
         {
-            _gaWindow.Run();
+            _gaWindow.VSync = VSyncMode.Off;
+            _gaWindow.Run(120.0, 120.0);
         }
 
         private void LoadCallback(object sender, EventArgs e)
@@ -63,25 +64,34 @@ namespace GAEngine
             _renderer = new Renderer();
             _staticShader = new StaticShader();
             _inputsHandler = new InputsHandler();
-            _meshes = new ComponentManager<MeshComponent>();
-            _transforms = new ComponentManager<TransformComponent>();
+            _meshes = new ComponentHandler<MeshComponent>();
+            _transforms = new ComponentHandler<TransformComponent>();
             _light = new Lights.Light(new Vector3(1, 1f, 1f), new Vector3(0f, 0f, 0f));
 
             _imGuiController = new ImGuiController(width, height);
 
-            for (int x = 0; x < 20; x++)
+            _camera.Move(0f, 0f, 150f);
+            _camera.Pitch = 50f;
+            _camera.FOV = 100f;
+
+            /// Optimize more this
+            // 2500 entities => ~30 FPS
+            var headMesh = new MeshComponent("res/head.fbx", "res/head.png");
+
+            for (int x = 0; x < 100; x++)
             {
-                for (int z = 0; z < 20; z++)
+                for (int z = 0; z < 25; z++)
                 {
                     var entity = new Entity();
 
-                    _meshes.CreateEntity(entity, new MeshComponent("res/head.fbx", "res/head.png"));
+                    _meshes.CreateEntity(entity, headMesh);
                     _transforms.CreateEntity(entity,
                         new TransformComponent(
-                            new Vector3(-15f * x, 0f, -100f * z),
+                            new Vector3(x * 5f, 0f, -50f * z),
                             Vector3.Zero,
-                            new Vector3(.8f, .8f, .8f)));
+                            new Vector3(.5f, .5f, .5f)));
                 }
+
             }
         }
 
@@ -123,51 +133,45 @@ namespace GAEngine
             #region IMGUI
             _imGuiController.Update(_gaWindow, (float)e.Time);
 
+            ImGui.ShowMetricsWindow();
+
             if (ImGui.Begin("Entities"))
             {
                 ImGui.Text(string.Format("FPS : {0}", (int)_gaWindow.RenderFrequency));
 
                 if (ImGui.BeginTabBar(""))
                 {
-                    //// entities
-                    //for (int i = 0; i < _entities.Count; i++)
-                    //{
-                    //    ImGui.PushID(i);
+                    // entities
+                    for (int i = 0; i < _meshes.Count; i++)
+                    {
+                        ImGui.PushID(i);
+                        var data = _meshes[i];
+                        var entity = data.Item2;
+                        var entityMesh = data.Item1;
 
-                    //    var entity = _entities[i];
+                        var transformData = _transforms[i];
+                        var transformEntity = transformData.Item1;
 
-                    //    if (ImGui.BeginTabItem(entity.ID.ToString()))
-                    //    {
-                    //        var position = entity.Position.Vector3ToV3();
-                    //        ImGui.SliderFloat3("Position", ref position, -10, 10);
+                        if (ImGui.BeginTabItem(entity.ID.ToString()))
+                        {
+                            var scale = transformEntity.Scale.Vector3ToV3();
+                            ImGui.SliderFloat3("Scale", ref scale, 0.1f, 5.0f);
+                            transformEntity.Scale = scale.Vector3ToV3();
 
-                    //        var rotationX = entity.RotationX;
-                    //        ImGui.SliderFloat("Rotation X", ref rotationX, -5, 5f);
+                            var meshModel = entityMesh.TexturedModel;
+                            var shineDamping = meshModel.Texture.ShineDamper;
+                            ImGui.SliderFloat("Shine Damp", ref shineDamping, 0, 3f);
+                            meshModel.Texture.ShineDamper = shineDamping;
 
-                    //        var rotationY = entity.RotationY;
-                    //        ImGui.SliderFloat("Rotation Y", ref rotationY, -5, 5f);
+                            var reflectivity = meshModel.Texture.Reflectivity;
+                            ImGui.SliderFloat("Reflectivity", ref reflectivity, 0, 5f);
+                            meshModel.Texture.Reflectivity = reflectivity;
 
-                    //        var scale = entity.Scaling;
-                    //        ImGui.SliderFloat("Scale", ref scale, 0.1f, 5.0f);
+                            ImGui.EndTabItem();
+                        }
 
-                    //        var shineDamping = entity.Model.Texture.ShineDamper;
-                    //        ImGui.SliderFloat("Shine Damp", ref shineDamping, 0, 3f);
-                    //        entity.Model.Texture.ShineDamper = shineDamping;
-
-                    //        var reflectivity = entity.Model.Texture.Reflectivity;
-                    //        ImGui.SliderFloat("Reflectivity", ref reflectivity, 0, 5f);
-                    //        entity.Model.Texture.Reflectivity = reflectivity;
-
-                    //        entity.Scale(scale);
-                    //        entity.RotationX = rotationX;
-                    //        entity.RotationY = rotationY;
-                    //        entity.Position = position.Vector3ToV3();
-
-                    //        ImGui.EndTabItem();
-                    //    }
-
-                    //    ImGui.PopID();
-                    //}
+                        ImGui.PopID();
+                    }
 
                     // camera
                     if (ImGui.BeginTabItem("Camera"))
