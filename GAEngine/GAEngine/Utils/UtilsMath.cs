@@ -7,14 +7,14 @@ namespace GAEngine.Utils
 {
     public static class UtilsMath
     {
-        public static Matrix4 CreateTransformMatrix(Vector3 translation, float rx, float ry, float rz, float scale)
+        public static Matrix4 CreateTransformMatrix(Vector3 translation, Vector3 rotation, Vector3 scale)
         {
             Matrix4 matrix = new Matrix4();
             matrix = Matrix4.Identity;
             matrix = Matrix4.CreateScale(scale) *
-                     Matrix4.CreateRotationX(rx) *
-                     Matrix4.CreateRotationY(ry) *
-                     Matrix4.CreateRotationZ(rz) *
+                     Matrix4.CreateRotationX(rotation.X) *
+                     Matrix4.CreateRotationY(rotation.Y) *
+                     Matrix4.CreateRotationZ(rotation.Z) *
                      Matrix4.CreateTranslation(translation);
             return matrix;
         }

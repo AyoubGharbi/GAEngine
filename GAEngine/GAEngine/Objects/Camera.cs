@@ -26,24 +26,24 @@ namespace GAEngine.Entities
         {
             KeyboardState state = Keyboard.GetState();
 
-            if (state.IsKeyDown(Key.Down))
+            if (state.IsKeyDown(Key.W))
             {
-                _position.Z -= 0.02f;
+                _position.Z -= 0.5f;
             }
 
-            if (state.IsKeyDown(Key.Up))
+            if (state.IsKeyDown(Key.S))
             {
-                _position.Z += 0.02f;
+                _position.Z += 0.5f;
             }
 
             if (state.IsKeyDown(Key.D))
             {
-                _position.X -= 0.02f;
+                _position.X -= 0.5f;
             }
 
             if (state.IsKeyDown(Key.A))
             {
-                _position.X += 0.02f;
+                _position.X += 0.5f;
             }
         }
 
