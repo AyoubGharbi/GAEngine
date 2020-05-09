@@ -38,6 +38,13 @@ namespace GAEngine.Components
             _texturedModel = new TexturedModel(raw, texture);
         }
 
+        public void UpdateMeshTexture(string texturePath)
+        {
+            var texture = ContentPipe.LoadTexture2D(texturePath);
+
+            _texturedModel.Texture = texture;
+        }
+
         public override void CleanUp()
         {
             _loader.CleanUp();

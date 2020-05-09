@@ -5,6 +5,7 @@
 		<TargetFramework>net461</TargetFramework>
 		<Platforms>AnyCPU;x64;x86</Platforms>
 		<StartupObject></StartupObject>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

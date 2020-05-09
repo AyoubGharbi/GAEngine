@@ -36,12 +36,12 @@ namespace GAEngine.Entities
                 _position.Z += 0.5f;
             }
 
-            if (state.IsKeyDown(Key.D))
+            if (state.IsKeyDown(Key.A))
             {
                 _position.X -= 0.5f;
             }
 
-            if (state.IsKeyDown(Key.A))
+            if (state.IsKeyDown(Key.D))
             {
                 _position.X += 0.5f;
             }

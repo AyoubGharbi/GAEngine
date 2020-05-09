@@ -24,6 +24,8 @@ namespace GAEngine.RenderEngine
 
         public void Render(GAWindow window, MeshComponent mesh, TransformComponent transform, StaticShader shader, Camera camera, Light light)
         {
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
             TexturedModel texturedModel = mesh.TexturedModel;
             RawModel rawModel = texturedModel.Raw;
             GL.BindVertexArray(rawModel.VAOID);
@@ -37,7 +39,7 @@ namespace GAEngine.RenderEngine
             shader.LoadViewMatrix(viewMatrix);
 
             Matrix4 projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(camera.FOV),
-                                                                           (float)window.Width / (float)window.Height, 0.1f, 1000.0f);
+                                                                           (float)window.Width / (float)window.Height, 0.1f, 10000.0f);
 
             shader.LoadProjectionMatrix(projectionMatrix);
 
