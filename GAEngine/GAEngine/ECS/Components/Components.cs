@@ -32,10 +32,17 @@ namespace GAEngine.Components
 
             var texture = ContentPipe.LoadTexture2D(texturePath);
 
-            texture.ShineDamper = 10;
-            texture.Reflectivity = 1;
+            texture.ShineDamper = 10f;
+            texture.Reflectivity = 0.01f;
 
             _texturedModel = new TexturedModel(raw, texture);
+        }
+
+        public void UpdateMeshTexture(string texturePath)
+        {
+            var texture = ContentPipe.LoadTexture2D(texturePath);
+
+            _texturedModel.Texture = texture;
         }
 
         public override void CleanUp()

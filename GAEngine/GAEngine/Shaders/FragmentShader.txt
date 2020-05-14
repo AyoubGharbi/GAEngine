@@ -18,7 +18,7 @@ void main(void)
 	vec3 unitToLightVector = normalize(toLightVector);
 
 	float nDot = dot(unitNormal, unitToLightVector);
-	float brightness = max(nDot, 0.0);
+	float brightness = max(nDot, 0.2);
 	vec3 diffuse = brightness * lightColor;
 
 	vec3 unityCameraVector = normalize(toCameraVector);

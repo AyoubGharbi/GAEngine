@@ -12,7 +12,7 @@ namespace GAEngine.Inputs
         private InputData _inputData;
         private MouseState _mouseState;
         private KeyboardState _keyboardState;
-        private List<ISource> _inputSources = new List<ISource>();
+        private readonly List<ISource> _inputSources = new List<ISource>();
 
         public InputData Data => _inputData;
 

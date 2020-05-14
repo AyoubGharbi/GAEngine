@@ -53,7 +53,7 @@ namespace GAEngine
         public void StartGame()
         {
             _gaWindow.VSync = VSyncMode.Off;
-            _gaWindow.Run(120.0, 120.0);
+            _gaWindow.Run(60.0, 30.0);
         }
 
         private void LoadCallback(object sender, EventArgs e)
@@ -67,21 +67,21 @@ namespace GAEngine
             _inputsHandler = new InputsHandler();
             _meshes = new ComponentHandler<MeshComponent>();
             _transforms = new ComponentHandler<TransformComponent>();
-            _light = new Lights.Light(new Vector3(1, 1f, 1f), new Vector3(0f, 0f, 0f));
+            _light = new Lights.Light(Vector3.One, new Vector3(0f, 0f, 0f));
 
             _imGuiController = new ImGuiController(width, height);
 
             /// Optimize more this
-            // 2500 entities => ~30 FPS
+            // 2000+ entities => FPS
             var entity = new Entity();
-            var headMesh = new MeshComponent("res/terrain.fbx", "res/color_hex_00.png");
+            var terrainMesh = new MeshComponent("res/gorilla.fbx", "res/gorilla.png");
 
-            _meshes.CreateEntity(entity, headMesh);
-            _transforms.CreateEntity(entity,
-                new TransformComponent(
-                    new Vector3(0, 0f, -50f),
-                    Vector3.Zero,
-                    Vector3.One));
+            for (int i = 0; i < 1; i++)
+            {
+                _meshes.CreateEntity(entity, terrainMesh);
+                _transforms.CreateEntity(entity,
+                    new TransformComponent(Vector3.Zero, Vector3.Zero, Vector3.One));
+            }
         }
 
         private void ResizeCallback(object sender, EventArgs e)
@@ -94,6 +94,7 @@ namespace GAEngine
             _imGuiController.WindowResized(width, height);
         }
 
+        byte[] buffer = Encoding.ASCII.GetBytes("This is just a text");
         private void RenderCallback(object sender, FrameEventArgs e)
         {
             _renderer.Prepare();
@@ -106,14 +107,12 @@ namespace GAEngine
                 _renderer.Render(_gaWindow, data.Item1, transformData.Item1, _staticShader, _camera, _light);
             }
 
-
             _imGuiController.Render();
 
             _staticShader.Stop();
 
             _gaWindow.SwapBuffers();
         }
-        string input = "jetpack";
 
         private void UpdateCallback(object sender, FrameEventArgs e)
         {
@@ -126,47 +125,18 @@ namespace GAEngine
 
             if (ImGui.Begin("Entities"))
             {
-                ImGui.Text(string.Format("FPS : {0}", (int)_gaWindow.RenderFrequency));
+                if (ImGui.Button("Refresh texture"))
+                {
+                    for (int i = 0; i < _meshes.Count; i++)
+                    {
+                        var data = _meshes[i];
+
+                        data.Item1.UpdateMeshTexture("res/gorilla.png");
+                    }
+                }
 
                 if (ImGui.BeginTabBar(""))
                 {
-                    // entities
-                    for (int i = 0; i < _meshes.Count; i++)
-                    {
-                        ImGui.PushID(i);
-                        var data = _meshes[i];
-                        var entity = data.Item2;
-                        var entityMesh = data.Item1;
-
-                        var transformData = _transforms[i];
-                        var transformEntity = transformData.Item1;
-
-                        if (ImGui.BeginTabItem(entity.ID.ToString()))
-                        {
-                            var transScale = transformEntity.Scale.Vector3ToV3();
-                            float scale = transScale.X;
-                            ImGui.SliderFloat("Scale", ref scale, 0.1f, 5.0f);
-                            transformEntity.Scale = new Vector3(scale, scale, scale);
-
-                            var position = transformEntity.Position.Vector3ToV3();
-                            ImGui.SliderFloat3("Position", ref position, -500f, 500f);
-                            transformEntity.Position = position.Vector3ToV3();
-
-                            var meshModel = entityMesh.TexturedModel;
-                            var shineDamping = meshModel.Texture.ShineDamper;
-                            ImGui.SliderFloat("Shine Damp", ref shineDamping, 0, 3f);
-                            meshModel.Texture.ShineDamper = shineDamping;
-
-                            var reflectivity = meshModel.Texture.Reflectivity;
-                            ImGui.SliderFloat("Reflectivity", ref reflectivity, 0, 5f);
-                            meshModel.Texture.Reflectivity = reflectivity;
-
-                            ImGui.EndTabItem();
-                        }
-
-                        ImGui.PopID();
-                    }
-
                     // camera
                     if (ImGui.BeginTabItem("Camera"))
                     {
@@ -205,6 +175,7 @@ namespace GAEngine
 
                 ImGui.End();
             }
+
             #endregion
 
             #region Tests
