@@ -8,6 +8,7 @@ using GAEngine.Utils;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System;
+using static GAEngine.Shaders.StaticShader;
 
 namespace GAEngine.RenderEngine
 {
@@ -15,6 +16,7 @@ namespace GAEngine.RenderEngine
     {
         public void Prepare()
         {
+            // color buffer and depth buffer
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
@@ -22,24 +24,35 @@ namespace GAEngine.RenderEngine
             GL.Enable(EnableCap.Lighting);
         }
 
-        public void Render(GAWindow window, MeshComponent mesh, TransformComponent transform, StaticShader shader, Camera camera, Light light)
+        public void Render(GAWindow window, MeshComponent mesh,
+                           TransformComponent transform, StaticShader shader,
+                           Camera camera, Light light)
         {
+            // back-facing polygons can be culled.
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Back);
+
             TexturedModel texturedModel = mesh.TexturedModel;
             RawModel rawModel = texturedModel.Raw;
-            GL.BindVertexArray(rawModel.VAOID);
-            GL.EnableVertexAttribArray(0);
-            GL.EnableVertexAttribArray(1);
-            GL.EnableVertexAttribArray(2);
 
+            // bind
+            GL.BindVertexArray(rawModel.VAOID);
+            // enable vertex attributes
+            GL.EnableVertexAttribArray(GetAttributeTypeID(AttributeTypes.position));
+            GL.EnableVertexAttribArray(GetAttributeTypeID(AttributeTypes.texCoords));
+            GL.EnableVertexAttribArray(GetAttributeTypeID(AttributeTypes.normal));
+
+            // lights
             shader.LoadLight(light);
 
+            // camera (view matrix)
             Matrix4 viewMatrix = UtilsMath.CreateViewMatrix(camera);
             shader.LoadViewMatrix(viewMatrix);
 
-            Matrix4 projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(camera.FOV),
-                                                                           (float)window.Width / (float)window.Height, 0.1f, 10000.0f);
+            Matrix4 projectionMatrix =
+                Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(camera.FOV),
+                                                                           (float)window.Width / (float)window.Height,
+                                                                           0.1f, 10000.0f);
 
             shader.LoadProjectionMatrix(projectionMatrix);
 
@@ -53,12 +66,16 @@ namespace GAEngine.RenderEngine
 
             shader.LoadShine(texturedModel.Texture.ShineDamper, texturedModel.Texture.Reflectivity);
 
+            // draw model
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, texturedModel.Texture.ID);
             GL.DrawElements(PrimitiveType.Triangles, rawModel.VertexCount, DrawElementsType.UnsignedInt, IntPtr.Zero);
-            GL.DisableVertexAttribArray(0);
-            GL.DisableVertexAttribArray(1);
-            GL.DisableVertexAttribArray(2);
+
+            // disable vertex attributes
+            GL.DisableVertexAttribArray(GetAttributeTypeID(AttributeTypes.position));
+            GL.DisableVertexAttribArray(GetAttributeTypeID(AttributeTypes.texCoords));
+            GL.DisableVertexAttribArray(GetAttributeTypeID(AttributeTypes.normal));
+            // unbind
             GL.BindVertexArray(0);
         }
     }

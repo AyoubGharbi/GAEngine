@@ -67,14 +67,14 @@ namespace GAEngine
             _inputsHandler = new InputsHandler();
             _meshes = new ComponentHandler<MeshComponent>();
             _transforms = new ComponentHandler<TransformComponent>();
-            _light = new Lights.Light(new Vector3(0.94f, 0.75f, 0.44f), new Vector3(0f, 0f, 0f));
+            _light = new Lights.Light(Vector3.One, new Vector3(0f, 0f, 0f));
 
             _imGuiController = new ImGuiController(width, height);
 
             /// Optimize more this
-            // 2500 entities => ~30 FPS
+            // 2000+ entities => FPS
             var entity = new Entity();
-            var terrainMesh = new MeshComponent("res/terrain.fbx", "res/color_hex_00.png");
+            var terrainMesh = new MeshComponent("res/gorilla.fbx", "res/gorilla.png");
 
             for (int i = 0; i < 1; i++)
             {
@@ -131,7 +131,7 @@ namespace GAEngine
                     {
                         var data = _meshes[i];
 
-                        data.Item1.UpdateMeshTexture("res/color_hex_00.png");
+                        data.Item1.UpdateMeshTexture("res/gorilla.png");
                     }
                 }
 

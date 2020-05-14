@@ -10,17 +10,18 @@ namespace GAEngine.Managers
 {
     class ComponentHandler<T> where T : IComponent
     {
-        private Stack<T> _components= new Stack<T>();
+        private Stack<T> _components = new Stack<T>();
         private Stack<Entity> _entities = new Stack<Entity>();
 
         public int Count => _components.Count;
 
-        public Tuple<T, Entity> this[int i] => Tuple.Create(_components.ElementAt(i), _entities.ElementAt(i));
+        public Tuple<T, Entity> this[int i]
+            => Tuple.Create(_components.ElementAt(i), _entities.ElementAt(i));
 
         public T CreateEntity(Entity entity, T component)
         {
             _entities.Push(entity);
-             _components.Push(component);
+            _components.Push(component);
 
             return _components.Peek();
         }

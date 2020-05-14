@@ -6,6 +6,13 @@ namespace GAEngine.Shaders
 {
     class StaticShader : ShaderProgram
     {
+        public enum AttributeTypes
+        {
+            position = 0,
+            texCoords = 1,
+            normal = 2
+        }
+
         private const string VERTEX_FILE = "shaders/VertexShader.txt";
         private const string FRAGMENT_FILE = "shaders/FragmentShader.txt";
 
@@ -23,9 +30,9 @@ namespace GAEngine.Shaders
 
         protected override void BindAttributes()
         {
-            base.BindAttribute(0, "position");
-            base.BindAttribute(1, "texCoords");
-            base.BindAttribute(2, "normal");
+            base.BindAttribute(GetAttributeTypeID(AttributeTypes.position), AttributeTypes.position.ToString());
+            base.BindAttribute(GetAttributeTypeID(AttributeTypes.texCoords), AttributeTypes.texCoords.ToString());
+            base.BindAttribute(GetAttributeTypeID(AttributeTypes.normal), AttributeTypes.normal.ToString());
         }
 
         protected override void GetAllUniformLocations()
@@ -64,6 +71,11 @@ namespace GAEngine.Shaders
         {
             base.LoadFloat(_locationShineDamper, damper);
             base.LoadFloat(_locationReflectivity, reflectivity);
+        }
+
+        public static int GetAttributeTypeID(AttributeTypes attType)
+        {
+            return (int)attType;
         }
     }
 }
