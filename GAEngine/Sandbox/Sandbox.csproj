@@ -3,10 +3,35 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net461</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\GAEngine\GAEngine.csproj" />
+    <!-- AssimpNet's build target must run in the executable project to copy its native libraries. -->
+    <PackageReference Include="AssimpNet" Version="4.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\res\demo\cube.obj;..\..\res\demo\checker.png">
+      <Link>res\demo\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\shaders\*.txt">
+      <Link>shaders\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\LICENSE;..\..\THIRD_PARTY_NOTICES.md">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\licenses\*.txt">
+      <Link>licenses\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

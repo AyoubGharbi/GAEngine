@@ -21,6 +21,9 @@ namespace GAEngine
 {
     public class World
     {
+        private const string DemoModel = "res/demo/cube.obj";
+        private const string DemoTexture = "res/demo/checker.png";
+
         // OpenTK window wrapper
         private GAWindow _gaWindow;
 
@@ -46,6 +49,7 @@ namespace GAEngine
             _gaWindow.Resize += ResizeCallback;
             _gaWindow.RenderFrame += RenderCallback;
             _gaWindow.UpdateFrame += UpdateCallback;
+            _gaWindow.KeyPress += (sender, e) => _imGuiController?.PressChar(e.KeyChar);
 
             _gaWindow.Closed += ClosedCallback;
         }
@@ -62,26 +66,22 @@ namespace GAEngine
             var height = _gaWindow.Height;
 
             _camera = new Camera();
+            _camera.Move(0f, 0f, 6f);
             _renderer = new Renderer();
             _staticShader = new StaticShader();
             _inputsHandler = new InputsHandler();
             _meshes = new ComponentHandler<MeshComponent>();
             _transforms = new ComponentHandler<TransformComponent>();
-            _light = new Lights.Light(Vector3.One, new Vector3(0f, 0f, 0f));
+            _light = new Lights.Light(Vector3.One, new Vector3(4f, 6f, 5f));
 
             _imGuiController = new ImGuiController(width, height);
 
-            /// Optimize more this
-            // 2000+ entities => FPS
+            // A bundled, UV-mapped cube exercises the same Assimp import path as other models.
             var entity = new Entity();
-            var terrainMesh = new MeshComponent("res/gorilla.fbx", "res/gorilla.png");
-
-            for (int i = 0; i < 1; i++)
-            {
-                _meshes.CreateEntity(entity, terrainMesh);
-                _transforms.CreateEntity(entity,
-                    new TransformComponent(Vector3.Zero, Vector3.Zero, Vector3.One));
-            }
+            var demoMesh = new MeshComponent(ContentPaths.Resolve(DemoModel), ContentPaths.Resolve(DemoTexture));
+            _meshes.CreateEntity(entity, demoMesh);
+            _transforms.CreateEntity(entity,
+                new TransformComponent(Vector3.Zero, new Vector3(0.3f, -0.5f, 0f), Vector3.One));
         }
 
         private void ResizeCallback(object sender, EventArgs e)
@@ -91,7 +91,7 @@ namespace GAEngine
 
             GL.Viewport(0, 0, width, height);
 
-            _imGuiController.WindowResized(width, height);
+            _imGuiController?.WindowResized(width, height);
         }
 
         byte[] buffer = Encoding.ASCII.GetBytes("This is just a text");
@@ -131,11 +131,11 @@ namespace GAEngine
                     {
                         var data = _meshes[i];
 
-                        data.Item1.UpdateMeshTexture("res/gorilla.png");
+                        data.Item1.UpdateMeshTexture(ContentPaths.Resolve(DemoTexture));
                     }
                 }
 
-                if (ImGui.BeginTabBar(""))
+                if (ImGui.BeginTabBar("SceneControls"))
                 {
                     // camera
                     if (ImGui.BeginTabItem("Camera"))
@@ -171,10 +171,8 @@ namespace GAEngine
 
                     ImGui.EndTabBar();
                 }
-
-
-                ImGui.End();
             }
+            ImGui.End();
 
             #endregion
 
@@ -186,7 +184,8 @@ namespace GAEngine
             //    data.Item1.Position += new Vector3(0.05f, 0f, 0f);
             //}
 
-            _camera.Move();
+            if (_gaWindow.Focused && !ImGui.GetIO().WantCaptureKeyboard)
+                _camera.Move();
 
             // exit game
             if (_inputsHandler.Data.Escape)

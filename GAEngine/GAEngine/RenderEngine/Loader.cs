@@ -1,6 +1,6 @@
 ﻿using Assimp;
 using Assimp.Configs;
-using OpenTK.Graphics.ES30;
+using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
 

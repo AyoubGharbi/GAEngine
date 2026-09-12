@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Adapted from Julius Häger (NogginBops), ImGui.NET_OpenTK_Sample (MIT).
+// The controller is derived from Veldrid.ImGui by Eric Mellino and contributors (MIT).
+// See THIRD_PARTY_NOTICES.md and licenses/ for sources and licence notices.
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;

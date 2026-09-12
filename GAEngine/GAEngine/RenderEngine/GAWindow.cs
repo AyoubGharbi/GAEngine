@@ -19,7 +19,8 @@ namespace GAEngine
     public class GAWindow : GameWindow
     {
         public GAWindow()
-            : base(800, 600, new GraphicsMode(32, 8, 0, 32), "GAEngine", GameWindowFlags.FixedWindow)
+            : base(800, 600, new GraphicsMode(32, 24, 0, 0), "GAEngine", GameWindowFlags.FixedWindow,
+                   DisplayDevice.Default, 4, 6, GraphicsContextFlags.ForwardCompatible)
         {
         }
     }

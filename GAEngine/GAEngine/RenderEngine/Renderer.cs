@@ -17,11 +17,10 @@ namespace GAEngine.RenderEngine
         public void Prepare()
         {
             // color buffer and depth buffer
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             GL.Enable(EnableCap.DepthTest);
-            GL.Enable(EnableCap.Lighting);
         }
 
         public void Render(GAWindow window, MeshComponent mesh,

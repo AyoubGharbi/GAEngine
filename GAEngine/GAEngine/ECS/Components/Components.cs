@@ -3,6 +3,7 @@ using GAEngine.Models;
 using GAEngine.RenderEngine;
 using GAEngine.Utils;
 using OpenTK;
+using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,12 +42,16 @@ namespace GAEngine.Components
         public void UpdateMeshTexture(string texturePath)
         {
             var texture = ContentPipe.LoadTexture2D(texturePath);
-
+            var previous = _texturedModel.Texture;
+            texture.ShineDamper = previous.ShineDamper;
+            texture.Reflectivity = previous.Reflectivity;
             _texturedModel.Texture = texture;
+            GL.DeleteTexture(previous.ID);
         }
 
         public override void CleanUp()
         {
+            GL.DeleteTexture(_texturedModel.Texture.ID);
             _loader.CleanUp();
         }
     }

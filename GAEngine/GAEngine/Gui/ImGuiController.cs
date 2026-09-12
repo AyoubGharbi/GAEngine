@@ -1,4 +1,7 @@
-﻿using ImGuiNET;
+﻿// Adapted from Julius Häger (NogginBops), ImGui.NET_OpenTK_Sample (MIT).
+// The controller is derived from Veldrid.ImGui by Eric Mellino and contributors (MIT).
+// See THIRD_PARTY_NOTICES.md and licenses/ for sources and licence notices.
+using ImGuiNET;
 using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Input;
@@ -9,14 +12,14 @@ using System.Runtime.CompilerServices;
 namespace GAEngine.IMGUI
 {
     /// <summary>
-    /// A modified version of Veldrid.ImGui's ImGuiRenderer.
-    /// Manages input for ImGui and handles rendering ImGui's DrawLists with Veldrid.
+    /// OpenTK integration from ImGui.NET_OpenTK_Sample, derived from Veldrid.ImGui.
+    /// Manages input for ImGui and renders its DrawLists with OpenGL.
     /// </summary>
     public class ImGuiController : IDisposable
     {
         private bool _frameBegun;
 
-        // Veldrid objects
+        // OpenGL objects
         private int _vertexArray;
         private int _vertexBuffer;
         private int _vertexBufferSize;
@@ -149,9 +152,7 @@ void main()
 
         /// <summary>
         /// Renders the ImGui draw list data.
-        /// This method requires a <see cref="GraphicsDevice"/> because it may create new DeviceBuffers if the size of vertex
-        /// or index data has increased beyond the capacity of the existing buffers.
-        /// A <see cref="CommandList"/> is needed to submit drawing and resource update commands.
+        /// Grows the OpenGL vertex and index buffers when required.
         /// </summary>
         public void Render()
         {

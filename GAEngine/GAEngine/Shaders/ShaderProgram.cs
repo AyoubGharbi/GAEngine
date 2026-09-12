@@ -1,5 +1,5 @@
 ﻿using OpenTK;
-using OpenTK.Graphics.ES30;
+using OpenTK.Graphics.OpenGL;
 using System;
 using System.IO;
 using System.Text;
@@ -103,7 +103,7 @@ namespace GAEngine.Shaders
             GL.GetShader(shaderID, ShaderParameter.CompileStatus, out int status);
 
             if (status != 1)
-                throw new ApplicationException();
+                throw new ApplicationException("Failed to compile shader '" + filePath + "': " + GL.GetShaderInfoLog(shaderID));
 
             return shaderID;
         }

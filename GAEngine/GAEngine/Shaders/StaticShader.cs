@@ -1,6 +1,7 @@
 ﻿using GAEngine.Lights;
 using OpenTK;
 using System;
+using GAEngine.Utils;
 
 namespace GAEngine.Shaders
 {
@@ -24,7 +25,7 @@ namespace GAEngine.Shaders
         private int _locationShineDamper;
         private int _locationReflectivity;
 
-        public StaticShader() : base(VERTEX_FILE, FRAGMENT_FILE)
+        public StaticShader() : base(ContentPaths.Resolve(VERTEX_FILE), ContentPaths.Resolve(FRAGMENT_FILE))
         {
         }
 

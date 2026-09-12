@@ -10,32 +10,34 @@ namespace GAEngine
     {
         public static ModelTexture LoadTexture2D(string filePath)
         {
-            Bitmap bitmap = new Bitmap(filePath);
+            // Dispose the bitmap after upload so Refresh texture does not keep the file locked.
+            using (Bitmap bitmap = new Bitmap(filePath))
+            {
+                int id = GL.GenTexture();
 
-            int id = GL.GenTexture();
+                BitmapData bmpData = bitmap.LockBits(
+                    new Rectangle(0, 0, bitmap.Width, bitmap.Height),
+                    ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
-            BitmapData bmpData = bitmap.LockBits(
-                new Rectangle(0, 0, bitmap.Width, bitmap.Height),
-                ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                GL.BindTexture(TextureTarget.Texture2D, id);
 
-            GL.BindTexture(TextureTarget.Texture2D, id);
+                GL.TexImage2D(
+                    TextureTarget.Texture2D, 0,
+                    PixelInternalFormat.Rgba,
+                    bitmap.Width, bitmap.Height, 0,
+                    OpenTK.Graphics.OpenGL.PixelFormat.Bgra,
+                    PixelType.UnsignedByte,
+                    bmpData.Scan0);
 
-            GL.TexImage2D(
-                TextureTarget.Texture2D, 0,
-                PixelInternalFormat.Rgba,
-                bitmap.Width, bitmap.Height, 0,
-                OpenTK.Graphics.OpenGL.PixelFormat.Bgra,
-                PixelType.UnsignedByte,
-                bmpData.Scan0);
+                bitmap.UnlockBits(bmpData);
 
-            bitmap.UnlockBits(bmpData);
+                GL.TexParameter(TextureTarget.Texture2D,
+                    TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+                GL.TexParameter(TextureTarget.Texture2D,
+                    TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);
 
-            GL.TexParameter(TextureTarget.Texture2D,
-                TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D,
-                TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);
-
-            return new ModelTexture(id, bitmap.Width, bitmap.Height);
+                return new ModelTexture(id, bitmap.Width, bitmap.Height);
+            }
         }
     }
 }
